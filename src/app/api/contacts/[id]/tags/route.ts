@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { fireAutomation } from "@/lib/automations";
 
 const addTagSchema = z.union([
   z.object({ tagId: z.string().min(1, "Tag ID is required") }),
@@ -81,6 +82,13 @@ export async function POST(
       data: { contactId, tagId },
       include: { tag: true },
     });
+
+    // Fire automation trigger (non-blocking)
+    fireAutomation("tag_added", {
+      userId: user.id,
+      contactId,
+      metadata: { tagId: tagOnContact.tag.id, tagName: tagOnContact.tag.name },
+    }).catch((err) => console.error("Automation trigger error:", err));
 
     return Response.json({ data: tagOnContact.tag }, { status: 201 });
   } catch (error) {

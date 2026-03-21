@@ -7,7 +7,9 @@ import {
   Users,
   Kanban,
   Target,
+  Calendar,
   MessageSquare,
+  Zap,
   Settings,
   LogOut,
   Menu,
@@ -20,7 +22,9 @@ const navItems = [
   { label: "Contacts", href: "/contacts", icon: Users },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Opportunities", href: "/opportunities", icon: Target },
+  { label: "Calendar", href: "/calendar", icon: Calendar },
   { label: "Conversations", href: "/conversations", icon: MessageSquare },
+  { label: "Automations", href: "/automations", icon: Zap },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 

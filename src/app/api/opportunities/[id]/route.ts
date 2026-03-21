@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { fireAutomation } from "@/lib/automations";
 
 const updateOpportunitySchema = z.object({
   title: z.string().min(1).optional(),
@@ -141,9 +142,31 @@ export async function PUT(
       data: updateData,
       include: {
         contact: { select: { id: true, firstName: true, lastName: true } },
-        stage: { select: { id: true, name: true, color: true } },
+        stage: {
+          select: {
+            id: true,
+            name: true,
+            color: true,
+            pipelineId: true,
+          },
+        },
       },
     });
+
+    // Fire automation when stage changes
+    if (
+      parsed.data.stageId !== undefined &&
+      parsed.data.stageId !== result.opportunity.stageId
+    ) {
+      fireAutomation("deal_stage_change", {
+        userId: user.id,
+        contactId: opportunity.contact.id,
+        metadata: {
+          stageId: opportunity.stage.id,
+          pipelineId: opportunity.stage.pipelineId,
+        },
+      }).catch((err) => console.error("Automation trigger error:", err));
+    }
 
     return Response.json({ data: opportunity });
   } catch (error) {

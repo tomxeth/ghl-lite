@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
+import { fireAutomation } from "@/lib/automations";
 import type { Prisma } from "@prisma/client";
 
 const createContactSchema = z.object({
@@ -28,7 +29,8 @@ export async function GET(request: NextRequest) {
     const limit = Math.max(1, Math.min(100, parseInt(searchParams.get("limit") || "25", 10)));
     const skip = (page - 1) * limit;
 
-    const where: Prisma.ContactWhereInput = { userId: user.id };
+    const userIds = await getTeamUserIds(user.id, user.teamId);
+    const where: Prisma.ContactWhereInput = { userId: { in: userIds } };
 
     if (search) {
       where.OR = [
@@ -125,6 +127,12 @@ export async function POST(request: Request) {
       },
       include: { tags: { include: { tag: true } } },
     });
+
+    // Fire automation trigger (non-blocking)
+    fireAutomation("contact_created", {
+      userId: user.id,
+      contactId: contact.id,
+    }).catch((err) => console.error("Automation trigger error:", err));
 
     return Response.json(
       {

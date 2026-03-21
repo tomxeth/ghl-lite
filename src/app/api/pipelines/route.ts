@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
 
 const createPipelineSchema = z.object({
   name: z.string().min(1, "Pipeline name is required"),
@@ -21,8 +21,9 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userIds = await getTeamUserIds(user.id, user.teamId);
     const pipelines = await db.pipeline.findMany({
-      where: { userId: user.id },
+      where: { userId: { in: userIds } },
       include: {
         stages: { orderBy: { position: "asc" } },
       },

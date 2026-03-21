@@ -60,3 +60,12 @@ export async function destroySession() {
     cookieStore.delete("session_token");
   }
 }
+
+export async function getTeamUserIds(userId: string, teamId: string | null): Promise<string[]> {
+  if (!teamId) return [userId];
+  const members = await db.user.findMany({
+    where: { teamId },
+    select: { id: true },
+  });
+  return members.map(m => m.id);
+}

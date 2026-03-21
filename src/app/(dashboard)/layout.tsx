@@ -21,6 +21,8 @@ export default async function DashboardLayout({
     id: user.id,
     email: user.email,
     name: user.name,
+    role: user.role,
+    teamId: user.teamId,
     createdAt: user.createdAt.toISOString(),
   };
 

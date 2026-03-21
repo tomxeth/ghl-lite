@@ -25,3 +25,15 @@ export function formatPhone(phone: string) {
   }
   return phone;
 }
+
+export function canEdit(role: string): boolean {
+  return ["owner", "admin", "member"].includes(role);
+}
+
+export function canManageTeam(role: string): boolean {
+  return ["owner", "admin"].includes(role);
+}
+
+export function isOwner(role: string): boolean {
+  return role === "owner";
+}

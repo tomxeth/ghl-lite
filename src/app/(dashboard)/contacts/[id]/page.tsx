@@ -2,11 +2,12 @@
 
 import { use, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
   Building2,
   Calendar,
+  Clock,
   Mail,
   MessageSquare,
   Phone,
@@ -85,6 +86,12 @@ export default function ContactDetailPage({
   const [editOpen, setEditOpen] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [editTags, setEditTags] = useState<Tag[]>([]);
+
+  // Appointments
+  const [contactAppointments, setContactAppointments] = useState<
+    { id: string; title: string; startTime: string; endTime: string; status: string }[]
+  >([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
 
   // Fetch contact
   const fetchContact = useCallback(async () => {
@@ -167,6 +174,34 @@ export default function ContactDetailPage({
 
     fetchTags();
   }, [editOpen]);
+
+  // Fetch upcoming appointments for this contact
+  useEffect(() => {
+    async function fetchAppointments() {
+      setAppointmentsLoading(true);
+      try {
+        const now = new Date().toISOString();
+        const farFuture = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+        const res = await fetch(
+          `/api/appointments?contactId=${id}&start=${now}&end=${farFuture}`
+        );
+        const json = await res.json();
+        if (res.ok) {
+          setContactAppointments(
+            json.data.appointments.filter(
+              (a: { status: string }) => a.status !== "cancelled"
+            )
+          );
+        }
+      } catch {
+        // silently fail
+      } finally {
+        setAppointmentsLoading(false);
+      }
+    }
+
+    fetchAppointments();
+  }, [id]);
 
   async function handleAddNote() {
     if (!newNote.trim()) return;
@@ -547,6 +582,49 @@ export default function ContactDetailPage({
                 Call
               </Button>
             </div>
+          </Card>
+
+          {/* Upcoming Appointments */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Appointments</CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push("/calendar")}
+              >
+                View all
+              </Button>
+            </CardHeader>
+            {appointmentsLoading ? (
+              <SkeletonText lines={3} />
+            ) : contactAppointments.length === 0 ? (
+              <p className="py-4 text-center text-sm text-zinc-400">
+                No upcoming appointments.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {contactAppointments.slice(0, 5).map((apt) => (
+                  <a
+                    key={apt.id}
+                    href="/calendar"
+                    className="flex items-start gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3 transition-colors hover:bg-zinc-100"
+                  >
+                    <Clock className="h-4 w-4 mt-0.5 shrink-0 text-blue-500" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-zinc-900 truncate">
+                        {apt.title}
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        {format(new Date(apt.startTime), "MMM d, yyyy")} &middot;{" "}
+                        {format(new Date(apt.startTime), "h:mm a")} -{" "}
+                        {format(new Date(apt.endTime), "h:mm a")}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
           </Card>
         </div>
       </div>

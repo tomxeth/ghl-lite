@@ -13,17 +13,24 @@ import {
   Kanban,
   Phone,
   Mail as MailIcon,
+  Users,
+  Crown,
+  Shield,
+  Eye,
+  Copy,
+  UserMinus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { cn, canManageTeam, isOwner } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
-type TabValue = "profile" | "pipelines" | "integrations";
+type TabValue = "profile" | "team" | "pipelines" | "integrations";
 
 interface Stage {
   id: string;
@@ -38,6 +45,30 @@ interface Pipeline {
   stages: Stage[];
 }
 
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+}
+
+interface Team {
+  id: string;
+  name: string;
+  members: TeamMember[];
+}
+
+interface TeamInvite {
+  id: string;
+  email: string;
+  role: string;
+  token: string;
+  status: string;
+  createdAt: string;
+  sender: { name: string; email: string };
+}
+
 const STAGE_COLORS = [
   "#3B82F6",
   "#8B5CF6",
@@ -48,6 +79,38 @@ const STAGE_COLORS = [
   "#14B8A6",
   "#6366F1",
 ];
+
+const ROLE_OPTIONS = [
+  { value: "admin", label: "Admin" },
+  { value: "member", label: "Member" },
+  { value: "viewer", label: "Viewer" },
+];
+
+function RoleIcon({ role, className }: { role: string; className?: string }) {
+  switch (role) {
+    case "owner":
+      return <Crown className={cn("h-3.5 w-3.5", className)} />;
+    case "admin":
+      return <Shield className={cn("h-3.5 w-3.5", className)} />;
+    case "viewer":
+      return <Eye className={cn("h-3.5 w-3.5", className)} />;
+    default:
+      return <User className={cn("h-3.5 w-3.5", className)} />;
+  }
+}
+
+function roleBadgeVariant(role: string) {
+  switch (role) {
+    case "owner":
+      return "warning" as const;
+    case "admin":
+      return "warning" as const;
+    case "viewer":
+      return "default" as const;
+    default:
+      return "success" as const;
+  }
+}
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -78,6 +141,21 @@ export default function SettingsPage() {
   const [deletePipelineId, setDeletePipelineId] = useState<string | null>(null);
   const [deletePipelineLoading, setDeletePipelineLoading] = useState(false);
 
+  // Team state
+  const [team, setTeam] = useState<Team | null>(null);
+  const [teamLoading, setTeamLoading] = useState(false);
+  const [createTeamName, setCreateTeamName] = useState("");
+  const [createTeamLoading, setCreateTeamLoading] = useState(false);
+  const [invites, setInvites] = useState<TeamInvite[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("member");
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState("");
+  const [inviteSuccess, setInviteSuccess] = useState("");
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
+  const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
+  const [removeMemberLoading, setRemoveMemberLoading] = useState(false);
+
   // Fetch pipelines
   const fetchPipelines = useCallback(async () => {
     setPipelinesLoading(true);
@@ -94,11 +172,37 @@ export default function SettingsPage() {
     }
   }, []);
 
+  // Fetch team
+  const fetchTeam = useCallback(async () => {
+    setTeamLoading(true);
+    try {
+      const [teamRes, invitesRes] = await Promise.all([
+        fetch("/api/team"),
+        fetch("/api/team/invite"),
+      ]);
+      const teamJson = await teamRes.json();
+      const invitesJson = await invitesRes.json();
+      if (teamRes.ok) {
+        setTeam(teamJson.data);
+      }
+      if (invitesRes.ok) {
+        setInvites(invitesJson.data || []);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setTeamLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (activeTab === "pipelines") {
       fetchPipelines();
     }
-  }, [activeTab, fetchPipelines]);
+    if (activeTab === "team") {
+      fetchTeam();
+    }
+  }, [activeTab, fetchPipelines, fetchTeam]);
 
   // Toggle pipeline expand
   function togglePipeline(pipelineId: string) {
@@ -233,8 +337,110 @@ export default function SettingsPage() {
     }
   }
 
+  // Create team
+  async function handleCreateTeam(e: React.FormEvent) {
+    e.preventDefault();
+    if (!createTeamName.trim()) return;
+    setCreateTeamLoading(true);
+    try {
+      const res = await fetch("/api/team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: createTeamName.trim() }),
+      });
+      if (res.ok) {
+        setCreateTeamName("");
+        fetchTeam();
+        // Reload page to update user context (role/teamId)
+        window.location.reload();
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setCreateTeamLoading(false);
+    }
+  }
+
+  // Send invite
+  async function handleSendInvite(e: React.FormEvent) {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+    setInviteLoading(true);
+    setInviteError("");
+    setInviteSuccess("");
+
+    try {
+      const res = await fetch("/api/team/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setInviteError(data.error || "Failed to send invite");
+        return;
+      }
+
+      const msg = data.data.emailSent
+        ? `Invite sent to ${inviteEmail}`
+        : "Invite created. Copy the link to share it.";
+      setInviteSuccess(msg);
+      setInviteEmail("");
+      setInviteRole("member");
+      fetchTeam();
+    } catch {
+      setInviteError("An unexpected error occurred");
+    } finally {
+      setInviteLoading(false);
+    }
+  }
+
+  // Copy invite link
+  function handleCopyInviteLink(token: string) {
+    const baseUrl = window.location.origin;
+    const link = `${baseUrl}/invite/${token}`;
+    navigator.clipboard.writeText(link);
+    setCopiedToken(token);
+    setTimeout(() => setCopiedToken(null), 2000);
+  }
+
+  // Remove member
+  async function handleRemoveMember() {
+    if (!removeMemberId) return;
+    setRemoveMemberLoading(true);
+    try {
+      const res = await fetch(`/api/team/members/${removeMemberId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setRemoveMemberId(null);
+        fetchTeam();
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setRemoveMemberLoading(false);
+    }
+  }
+
+  // Change member role
+  async function handleChangeRole(memberId: string, newRole: string) {
+    try {
+      await fetch(`/api/team/members/${memberId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: newRole }),
+      });
+      fetchTeam();
+    } catch {
+      // silently fail
+    }
+  }
+
   const tabs: { value: TabValue; label: string; icon: typeof User }[] = [
     { value: "profile", label: "Profile", icon: User },
+    { value: "team", label: "Team", icon: Users },
     { value: "pipelines", label: "Pipelines", icon: Kanban },
     { value: "integrations", label: "Integrations", icon: Plug },
   ];
@@ -292,6 +498,237 @@ export default function SettingsPage() {
               Password change functionality is coming soon.
             </p>
           </Card>
+        </div>
+      )}
+
+      {/* Team Tab */}
+      {activeTab === "team" && (
+        <div className="max-w-2xl space-y-4">
+          {teamLoading ? (
+            <div className="space-y-3">
+              <Card>
+                <SkeletonText lines={4} />
+              </Card>
+            </div>
+          ) : !team ? (
+            /* No team — show create team */
+            <Card>
+              <CardHeader>
+                <CardTitle>Create a Team</CardTitle>
+              </CardHeader>
+              <p className="text-sm text-zinc-500 mb-4">
+                Create a team to collaborate with others. Team members share
+                access to contacts, pipelines, and opportunities.
+              </p>
+              <form
+                onSubmit={handleCreateTeam}
+                className="flex items-end gap-3"
+              >
+                <div className="flex-1">
+                  <Input
+                    label="Team Name"
+                    placeholder="My Team"
+                    value={createTeamName}
+                    onChange={(e) => setCreateTeamName(e.target.value)}
+                    required
+                  />
+                </div>
+                <Button type="submit" loading={createTeamLoading}>
+                  <Plus className="h-4 w-4" />
+                  Create Team
+                </Button>
+              </form>
+            </Card>
+          ) : (
+            /* Has team — show management */
+            <>
+              {/* Team Name */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-zinc-500" />
+                    <CardTitle>{team.name}</CardTitle>
+                  </div>
+                  <Badge variant={roleBadgeVariant(user.role)}>
+                    <RoleIcon role={user.role} className="mr-1" />
+                    {user.role}
+                  </Badge>
+                </CardHeader>
+                <p className="text-sm text-zinc-500">
+                  {team.members.length} member{team.members.length !== 1 && "s"}
+                </p>
+              </Card>
+
+              {/* Members List */}
+              <Card noPadding>
+                <div className="px-4 py-3 border-b border-zinc-100">
+                  <h3 className="text-sm font-semibold text-zinc-900">
+                    Members
+                  </h3>
+                </div>
+                <div className="divide-y divide-zinc-100">
+                  {team.members.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center justify-between px-4 py-3"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-xs font-medium text-zinc-600">
+                          {member.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-zinc-900">
+                            {member.name}
+                            {member.id === user.id && (
+                              <span className="ml-1.5 text-xs text-zinc-400">
+                                (you)
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            {member.email}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {isOwner(user.role) && member.id !== user.id ? (
+                          <Select
+                            options={ROLE_OPTIONS}
+                            value={member.role}
+                            onChange={(e) =>
+                              handleChangeRole(member.id, e.target.value)
+                            }
+                            className="w-28"
+                          />
+                        ) : (
+                          <Badge variant={roleBadgeVariant(member.role)}>
+                            <RoleIcon role={member.role} className="mr-1" />
+                            {member.role}
+                          </Badge>
+                        )}
+                        {canManageTeam(user.role) &&
+                          member.id !== user.id &&
+                          member.role !== "owner" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setRemoveMemberId(member.id)}
+                              className="text-zinc-400 hover:text-red-600"
+                              title="Remove member"
+                            >
+                              <UserMinus className="h-4 w-4" />
+                            </Button>
+                          )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Invite Form */}
+              {canManageTeam(user.role) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Invite Member</CardTitle>
+                  </CardHeader>
+                  <form
+                    onSubmit={handleSendInvite}
+                    className="flex items-end gap-3"
+                  >
+                    <div className="flex-1">
+                      <Input
+                        label="Email"
+                        type="email"
+                        placeholder="colleague@example.com"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="w-32">
+                      <Select
+                        label="Role"
+                        options={ROLE_OPTIONS}
+                        value={inviteRole}
+                        onChange={(e) => setInviteRole(e.target.value)}
+                      />
+                    </div>
+                    <Button type="submit" loading={inviteLoading}>
+                      <Plus className="h-4 w-4" />
+                      Invite
+                    </Button>
+                  </form>
+                  {inviteError && (
+                    <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+                      {inviteError}
+                    </p>
+                  )}
+                  {inviteSuccess && (
+                    <p className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">
+                      {inviteSuccess}
+                    </p>
+                  )}
+                </Card>
+              )}
+
+              {/* Pending Invites */}
+              {invites.length > 0 && canManageTeam(user.role) && (
+                <Card noPadding>
+                  <div className="px-4 py-3 border-b border-zinc-100">
+                    <h3 className="text-sm font-semibold text-zinc-900">
+                      Pending Invites
+                    </h3>
+                  </div>
+                  <div className="divide-y divide-zinc-100">
+                    {invites.map((invite) => (
+                      <div
+                        key={invite.id}
+                        className="flex items-center justify-between px-4 py-3"
+                      >
+                        <div>
+                          <p className="text-sm text-zinc-900">
+                            {invite.email}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            Invited as{" "}
+                            <Badge
+                              variant={roleBadgeVariant(invite.role)}
+                              className="ml-1"
+                            >
+                              {invite.role}
+                            </Badge>
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopyInviteLink(invite.token)}
+                          title="Copy invite link"
+                        >
+                          {copiedToken === invite.token ? (
+                            <>
+                              <Check className="h-3.5 w-3.5 text-green-600" />
+                              <span className="text-green-600">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3.5 w-3.5" />
+                              Copy Link
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+            </>
+          )}
         </div>
       )}
 
@@ -618,6 +1055,35 @@ export default function SettingsPage() {
           </Button>
         </div>
       </Modal>
+
+      {/* Remove Member Confirmation */}
+      <Modal
+        open={!!removeMemberId}
+        onClose={() => setRemoveMemberId(null)}
+        title="Remove Member"
+        className="max-w-sm"
+      >
+        <p className="text-sm text-zinc-600">
+          Are you sure you want to remove this member from the team? They will
+          lose access to shared data.
+        </p>
+        <div className="mt-4 flex items-center justify-end gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setRemoveMemberId(null)}
+            disabled={removeMemberLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleRemoveMember}
+            loading={removeMemberLoading}
+          >
+            Remove
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -656,4 +1122,3 @@ function MailgunStatus() {
     </Badge>
   );
 }
-

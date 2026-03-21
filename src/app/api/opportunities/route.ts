@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
 
 const createOpportunitySchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -25,7 +25,8 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "25");
     const skip = (page - 1) * limit;
 
-    const where: Record<string, unknown> = { userId: user.id };
+    const userIds = await getTeamUserIds(user.id, user.teamId);
+    const where: Record<string, unknown> = { userId: { in: userIds } };
 
     if (search) {
       where.OR = [

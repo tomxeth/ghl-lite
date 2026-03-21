@@ -15,9 +15,12 @@ model User {
   email          String   @unique
   hashedPassword String
   name           String
+  role           String   @default("owner") // owner | admin | member | viewer
+  teamId         String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  team          Team?          @relation(fields: [teamId], references: [id])
   contacts      Contact[]
   pipelines     Pipeline[]
   opportunities Opportunity[]
@@ -26,6 +29,11 @@ model User {
   smsMessages   SmsMessage[]
   calls         Call[]
   sessions      Session[]
+  automations   Automation[]
+  appointments  Appointment[]
+  invitesSent   TeamInvite[]   @relation("InviteSender")
+
+  @@index([teamId])
 }
 
 model Session {
@@ -62,6 +70,7 @@ model Contact {
   emailMessages EmailMessage[]
   smsMessages   SmsMessage[]
   calls         Call[]
+  appointments  Appointment[]
 
   @@index([userId])
   @@index([email])
@@ -223,4 +232,104 @@ model Call {
 
   @@index([contactId])
   @@index([twilioSid])
+}
+
+// ─── TEAMS ───────────────────────────────────────────────
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members User[]
+  invites TeamInvite[]
+}
+
+model TeamInvite {
+  id        String   @id @default(cuid())
+  teamId    String
+  email     String
+  role      String   @default("member")
+  token     String   @unique @default(cuid())
+  status    String   @default("pending")
+  invitedBy String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  sender User @relation("InviteSender", fields: [invitedBy], references: [id])
+
+  @@index([token])
+  @@index([email])
+}
+
+// ─── AUTOMATIONS ─────────────────────────────────────────
+
+model Automation {
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  active        Boolean  @default(true)
+  trigger       String
+  triggerConfig Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps AutomationStep[]
+  logs  AutomationLog[]
+
+  @@index([userId])
+  @@index([trigger])
+}
+
+model AutomationStep {
+  id           String @id @default(cuid())
+  automationId String
+  position     Int
+  action       String
+  config       Json
+
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([automationId])
+}
+
+model AutomationLog {
+  id           String   @id @default(cuid())
+  automationId String
+  contactId    String?
+  stepIndex    Int
+  status       String
+  message      String?
+  createdAt    DateTime @default(now())
+
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([automationId])
+  @@index([createdAt])
+}
+
+// ─── APPOINTMENTS ────────────────────────────────────────
+
+model Appointment {
+  id          String   @id @default(cuid())
+  userId      String
+  contactId   String?
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  status      String   @default("scheduled")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([contactId])
+  @@index([startTime])
 }
