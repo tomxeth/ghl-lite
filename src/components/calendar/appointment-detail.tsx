@@ -37,9 +37,9 @@ const statusVariant: Record<string, "default" | "success" | "danger"> = {
 };
 
 const statusLabel: Record<string, string> = {
-  scheduled: "Scheduled",
-  completed: "Completed",
-  cancelled: "Cancelled",
+  scheduled: "Planifié",
+  completed: "Terminé",
+  cancelled: "Annulé",
 };
 
 export function AppointmentDetail({
@@ -125,7 +125,7 @@ export function AppointmentDetail({
       <div className="flex gap-2 border-t border-zinc-100 pt-4">
         <Button variant="secondary" size="sm" onClick={onEdit}>
           <Edit2 className="h-3.5 w-3.5" />
-          Edit
+          Modifier
         </Button>
         <Button
           variant="danger"
@@ -134,7 +134,7 @@ export function AppointmentDetail({
           loading={deleting}
         >
           <Trash2 className="h-3.5 w-3.5" />
-          Cancel
+          Annuler
         </Button>
       </div>
     </div>

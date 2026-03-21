@@ -209,14 +209,14 @@ export default function CalendarPage() {
   const headerTitle =
     viewMode === "month"
       ? format(currentDate, "MMMM yyyy")
-      : `Week of ${format(startOfWeek(currentDate, { weekStartsOn: 1 }), "MMM d, yyyy")}`;
+      : `Semaine du ${format(startOfWeek(currentDate, { weekStartsOn: 1 }), "d MMM yyyy")}`;
 
   return (
     <div className="flex flex-col gap-4">
       {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-semibold text-zinc-900">Calendar</h1>
+          <h1 className="text-lg font-semibold text-zinc-900">Calendrier</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ export default function CalendarPage() {
               )}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
-              Month
+              Mois
             </button>
             <button
               onClick={() => setViewMode("week")}
@@ -244,7 +244,7 @@ export default function CalendarPage() {
               )}
             >
               <CalendarIcon className="h-3.5 w-3.5" />
-              Week
+              Semaine
             </button>
           </div>
 
@@ -255,7 +255,7 @@ export default function CalendarPage() {
             }}
           >
             <Plus className="h-4 w-4" />
-            Add Appointment
+            Ajouter un rendez-vous
           </Button>
         </div>
       </div>
@@ -263,20 +263,20 @@ export default function CalendarPage() {
       {/* Navigation */}
       <div className="flex items-center gap-3">
         <Button variant="secondary" size="sm" onClick={handleToday}>
-          Today
+          Aujourd'hui
         </Button>
         <div className="flex items-center gap-1">
           <button
             onClick={handlePrev}
             className="rounded-lg p-1.5 text-zinc-600 hover:bg-zinc-100 transition-colors cursor-pointer"
-            aria-label="Previous"
+            aria-label="Précédent"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={handleNext}
             className="rounded-lg p-1.5 text-zinc-600 hover:bg-zinc-100 transition-colors cursor-pointer"
-            aria-label="Next"
+            aria-label="Suivant"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -288,7 +288,7 @@ export default function CalendarPage() {
       <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
         {loading && appointments.length === 0 ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-sm text-zinc-400">Loading...</div>
+            <div className="text-sm text-zinc-400">Chargement...</div>
           </div>
         ) : viewMode === "month" ? (
           <CalendarMonth
@@ -313,7 +313,7 @@ export default function CalendarPage() {
           setCreateOpen(false);
           setCreateInitialDate("");
         }}
-        title="New Appointment"
+        title="Nouveau rendez-vous"
         className="max-w-lg"
       >
         <AppointmentForm
@@ -334,7 +334,7 @@ export default function CalendarPage() {
           setDetailOpen(false);
           setSelectedAppointment(null);
         }}
-        title="Appointment Details"
+        title="Détails du rendez-vous"
         className="max-w-md"
       >
         {selectedAppointment && (
@@ -351,7 +351,7 @@ export default function CalendarPage() {
       <Modal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        title="Edit Appointment"
+        title="Modifier le rendez-vous"
         className="max-w-lg"
       >
         {selectedAppointment && (

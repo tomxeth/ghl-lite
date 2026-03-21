@@ -90,7 +90,7 @@ export default function ContactsPage() {
         <h1 className="text-xl font-semibold text-zinc-900">Contacts</h1>
         <Button onClick={() => router.push("/contacts/new")}>
           <Plus className="h-4 w-4" />
-          Add Contact
+          Ajouter un contact
         </Button>
       </div>
 
@@ -99,7 +99,7 @@ export default function ContactsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <Input
-            placeholder="Search contacts..."
+            placeholder="Rechercher des contacts..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -115,7 +115,7 @@ export default function ContactsPage() {
           >
             {selectedTag ? (
               <>
-                Tag: {selectedTag}
+                Tag : {selectedTag}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -129,7 +129,7 @@ export default function ContactsPage() {
                 </button>
               </>
             ) : (
-              "Filter by tag"
+              "Filtrer par tag"
             )}
           </Button>
 
@@ -142,7 +142,7 @@ export default function ContactsPage() {
               <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg animate-fade-in">
                 {tags.length === 0 ? (
                   <p className="px-3 py-2 text-sm text-zinc-400">
-                    No tags available
+                    Aucun tag disponible
                   </p>
                 ) : (
                   tags.map((tag) => (
@@ -178,7 +178,7 @@ export default function ContactsPage() {
       {total > 0 && (
         <div className="flex items-center justify-between text-sm text-zinc-500">
           <span>
-            Showing {startItem}-{endItem} of {total}
+            Affichage {startItem}-{endItem} sur {total}
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -188,7 +188,7 @@ export default function ContactsPage() {
               onClick={() => setPage((p) => p - 1)}
             >
               <ChevronLeft className="h-4 w-4" />
-              Prev
+              Préc.
             </Button>
             <Button
               variant="secondary"
@@ -196,7 +196,7 @@ export default function ContactsPage() {
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
-              Next
+              Suiv.
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

@@ -46,7 +46,7 @@ function MessageThread({ messages, loading }: MessageThreadProps) {
   if (messages.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-400">No messages yet.</p>
+        <p className="text-sm text-zinc-400">Aucun message pour le moment.</p>
       </div>
     );
   }

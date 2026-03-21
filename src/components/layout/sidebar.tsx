@@ -21,11 +21,11 @@ import { useAuth } from "@/hooks/use-auth";
 const navItems = [
   { label: "Contacts", href: "/contacts", icon: Users },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
-  { label: "Opportunities", href: "/opportunities", icon: Target },
-  { label: "Calendar", href: "/calendar", icon: Calendar },
+  { label: "Opportunités", href: "/opportunities", icon: Target },
+  { label: "Calendrier", href: "/calendar", icon: Calendar },
   { label: "Conversations", href: "/conversations", icon: MessageSquare },
-  { label: "Automations", href: "/automations", icon: Zap },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Automatisations", href: "/automations", icon: Zap },
+  { label: "Paramètres", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -52,7 +52,7 @@ export function Sidebar() {
       <button
         onClick={() => setMobileOpen(true)}
         className="fixed top-3 left-3 z-40 rounded-lg border border-zinc-200 bg-white p-2 shadow-sm lg:hidden"
-        aria-label="Open menu"
+        aria-label="Ouvrir le menu"
       >
         <Menu className="h-5 w-5 text-zinc-600" />
       </button>
@@ -80,7 +80,7 @@ export function Sidebar() {
           <button
             onClick={() => setMobileOpen(false)}
             className="rounded-lg p-1 hover:bg-zinc-100 lg:hidden"
-            aria-label="Close menu"
+            aria-label="Fermer le menu"
           >
             <X className="h-5 w-5 text-zinc-500" />
           </button>
@@ -128,7 +128,7 @@ export function Sidebar() {
             <button
               onClick={handleLogout}
               className="shrink-0 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
-              title="Log out"
+              title="Se déconnecter"
             >
               <LogOut className="h-4 w-4" />
             </button>

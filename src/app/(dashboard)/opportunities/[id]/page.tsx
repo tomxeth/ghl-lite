@@ -212,10 +212,10 @@ export default function OpportunityDetailPage({
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <h2 className="text-lg font-semibold text-zinc-900">
-          Opportunity not found
+          Opportunité introuvable
         </h2>
         <p className="mt-1 text-sm text-zinc-500">
-          The opportunity you are looking for does not exist.
+          L'opportunité que vous recherchez n'existe pas.
         </p>
         <Button
           variant="secondary"
@@ -223,7 +223,7 @@ export default function OpportunityDetailPage({
           onClick={() => router.push("/opportunities")}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Opportunities
+          Retour aux Opportunités
         </Button>
       </div>
     );
@@ -266,7 +266,7 @@ export default function OpportunityDetailPage({
           onClick={() => router.push("/opportunities")}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Opportunities
+          Retour aux Opportunités
         </Button>
       </div>
 
@@ -289,7 +289,7 @@ export default function OpportunityDetailPage({
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onClick={openEditModal}>
             <Edit className="h-4 w-4" />
-            Edit
+            Modifier
           </Button>
           <Button
             variant="danger"
@@ -332,7 +332,7 @@ export default function OpportunityDetailPage({
                     color: stage.color,
                     borderColor: isActive ? stage.color : "transparent",
                   }}
-                  title={`Move to ${stage.name}`}
+                  title={`Déplacer vers ${stage.name}`}
                 >
                   {stage.name}
                 </button>
@@ -348,7 +348,7 @@ export default function OpportunityDetailPage({
           {/* Activity timeline */}
           <Card>
             <CardHeader>
-              <CardTitle>Activity</CardTitle>
+              <CardTitle>Activité</CardTitle>
             </CardHeader>
             <ActivityTimeline
               activities={opportunity.activities}
@@ -370,14 +370,14 @@ export default function OpportunityDetailPage({
                   router.push(`/contacts/${opportunity.contact.id}`)
                 }
               >
-                View
+                Voir
               </Button>
             </CardHeader>
             <dl className="space-y-3 text-sm">
               <div className="flex items-start gap-3">
                 <User className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
-                  <dt className="text-zinc-500">Name</dt>
+                  <dt className="text-zinc-500">Nom</dt>
                   <dd className="text-zinc-900">
                     {opportunity.contact.firstName}{" "}
                     {opportunity.contact.lastName}
@@ -389,6 +389,7 @@ export default function OpportunityDetailPage({
                   <Mail className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                   <div>
                     <dt className="text-zinc-500">Email</dt>
+
                     <dd className="text-zinc-900">
                       {opportunity.contact.email}
                     </dd>
@@ -399,7 +400,7 @@ export default function OpportunityDetailPage({
                 <div className="flex items-start gap-3">
                   <Phone className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                   <div>
-                    <dt className="text-zinc-500">Phone</dt>
+                    <dt className="text-zinc-500">Téléphone</dt>
                     <dd className="text-zinc-900">
                       {opportunity.contact.phone}
                     </dd>
@@ -410,7 +411,7 @@ export default function OpportunityDetailPage({
                 <div className="flex items-start gap-3">
                   <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                   <div>
-                    <dt className="text-zinc-500">Company</dt>
+                    <dt className="text-zinc-500">Entreprise</dt>
                     <dd className="text-zinc-900">
                       {opportunity.contact.company}
                     </dd>
@@ -423,13 +424,13 @@ export default function OpportunityDetailPage({
           {/* Deal info card */}
           <Card>
             <CardHeader>
-              <CardTitle>Deal Info</CardTitle>
+              <CardTitle>Infos affaire</CardTitle>
             </CardHeader>
             <dl className="space-y-3 text-sm">
               <div className="flex items-start gap-3">
                 <DollarSign className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
-                  <dt className="text-zinc-500">Value</dt>
+                  <dt className="text-zinc-500">Valeur</dt>
                   <dd className="text-zinc-900">
                     {formatCurrency(opportunity.value, opportunity.currency)}
                   </dd>
@@ -438,7 +439,7 @@ export default function OpportunityDetailPage({
               <div className="flex items-start gap-3">
                 <Calendar className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
-                  <dt className="text-zinc-500">Created</dt>
+                  <dt className="text-zinc-500">Créé</dt>
                   <dd className="text-zinc-900">
                     {format(new Date(opportunity.createdAt), "MMM d, yyyy")}
                     <span className="ml-1 text-zinc-400">
@@ -455,7 +456,7 @@ export default function OpportunityDetailPage({
                 <div className="flex items-start gap-3">
                   <Calendar className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                   <div>
-                    <dt className="text-zinc-500">Closed</dt>
+                    <dt className="text-zinc-500">Clôturé</dt>
                     <dd className="text-zinc-900">
                       {format(
                         new Date(opportunity.closedAt),
@@ -474,18 +475,18 @@ export default function OpportunityDetailPage({
       <Modal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        title="Edit Deal"
+        title="Modifier l'affaire"
         className="max-w-md"
       >
         <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
           <Input
-            label="Title"
+            label="Titre"
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
             required
           />
           <Input
-            label="Value"
+            label="Valeur"
             type="number"
             min="0"
             step="any"
@@ -493,11 +494,11 @@ export default function OpportunityDetailPage({
             onChange={(e) => setEditValue(e.target.value)}
           />
           <Select
-            label="Status"
+            label="Statut"
             options={[
-              { value: "open", label: "Open" },
-              { value: "won", label: "Won" },
-              { value: "lost", label: "Lost" },
+              { value: "open", label: "Ouvert" },
+              { value: "won", label: "Gagné" },
+              { value: "lost", label: "Perdu" },
             ]}
             value={editStatus}
             onChange={(e) => setEditStatus(e.target.value)}
@@ -509,10 +510,10 @@ export default function OpportunityDetailPage({
               onClick={() => setEditOpen(false)}
               disabled={editLoading}
             >
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" loading={editLoading}>
-              Save Changes
+              Enregistrer les modifications
             </Button>
           </div>
         </form>
@@ -522,12 +523,12 @@ export default function OpportunityDetailPage({
       <Modal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        title="Delete Deal"
+        title="Supprimer l'affaire"
         className="max-w-sm"
       >
         <p className="text-sm text-zinc-600">
-          Are you sure you want to delete &quot;{opportunity.title}&quot;? This
-          action cannot be undone.
+          Êtes-vous sûr de vouloir supprimer &quot;{opportunity.title}&quot; ? Cette
+          action est irréversible.
         </p>
         <div className="mt-4 flex items-center justify-end gap-3">
           <Button
@@ -535,14 +536,14 @@ export default function OpportunityDetailPage({
             onClick={() => setDeleteOpen(false)}
             disabled={deleteLoading}
           >
-            Cancel
+            Annuler
           </Button>
           <Button
             variant="danger"
             onClick={handleDelete}
             loading={deleteLoading}
           >
-            Delete
+            Supprimer
           </Button>
         </div>
       </Modal>

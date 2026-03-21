@@ -36,7 +36,7 @@ function CallControls({
 
       if (res.ok) {
         setCallStatus("initiated");
-        toast.success("Call initiated");
+        toast.success("Appel lancé");
         onCallInitiated();
 
         // Reset status after a delay
@@ -46,12 +46,12 @@ function CallControls({
         }, 5000);
       } else {
         const json = await res.json();
-        toast.error(json.error || "Failed to initiate call");
+        toast.error(json.error || "Échec du lancement de l'appel");
         setCallStatus(null);
         setCalling(false);
       }
     } catch {
-      toast.error("An unexpected error occurred");
+      toast.error("Une erreur inattendue s'est produite");
       setCallStatus(null);
       setCalling(false);
     }
@@ -62,7 +62,7 @@ function CallControls({
       <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
         <PhoneOff className="h-5 w-5 text-zinc-400" />
         <p className="text-sm text-zinc-400">
-          No phone number on file for this contact.
+          Aucun numéro de téléphone enregistré pour ce contact.
         </p>
       </div>
     );
@@ -72,7 +72,7 @@ function CallControls({
     <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-4">
       <Button onClick={handleCall} disabled={calling} loading={calling}>
         <Phone className="h-4 w-4" />
-        Call
+        Appeler
       </Button>
       {callStatus && (
         <Badge
@@ -84,7 +84,7 @@ function CallControls({
               : "default"
           }
         >
-          {callStatus === "initiating" ? "Connecting..." : "Call in progress"}
+          {callStatus === "initiating" ? "Connexion..." : "Appel en cours"}
         </Badge>
       )}
     </div>

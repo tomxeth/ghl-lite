@@ -112,23 +112,23 @@ export function AppointmentForm({
     const newErrors: Record<string, string> = {};
 
     if (!title.trim()) {
-      newErrors.title = "Title is required";
+      newErrors.title = "Le titre est requis";
     }
 
     if (!date) {
-      newErrors.date = "Date is required";
+      newErrors.date = "La date est requise";
     }
 
     if (!startTime) {
-      newErrors.startTime = "Start time is required";
+      newErrors.startTime = "L'heure de début est requise";
     }
 
     if (!endTime) {
-      newErrors.endTime = "End time is required";
+      newErrors.endTime = "L'heure de fin est requise";
     }
 
     if (startTime && endTime && startTime >= endTime) {
-      newErrors.endTime = "End time must be after start time";
+      newErrors.endTime = "L'heure de fin doit être après l'heure de début";
     }
 
     setErrors(newErrors);
@@ -166,10 +166,10 @@ export function AppointmentForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Input
-        label="Title"
+        label="Titre"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Appointment title"
+        placeholder="Titre du rendez-vous"
         error={errors.title}
         required
       />
@@ -177,11 +177,12 @@ export function AppointmentForm({
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-zinc-700">
           Description
+
         </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Optional description..."
+          placeholder="Description optionnelle..."
           rows={3}
           className={cn(
             "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900",
@@ -202,7 +203,7 @@ export function AppointmentForm({
           required
         />
         <Input
-          label="Start Time"
+          label="Heure de début"
           type="time"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
@@ -210,7 +211,7 @@ export function AppointmentForm({
           required
         />
         <Input
-          label="End Time"
+          label="Heure de fin"
           type="time"
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
@@ -220,15 +221,16 @@ export function AppointmentForm({
       </div>
 
       <Input
-        label="Location"
+        label="Lieu"
         value={location}
         onChange={(e) => setLocation(e.target.value)}
-        placeholder="Meeting room, Zoom link, etc."
+        placeholder="Salle de réunion, lien Zoom, etc."
       />
 
       {/* Contact search */}
       <div className="relative flex flex-col gap-1.5">
         <label className="text-sm font-medium text-zinc-700">Contact</label>
+
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <input
@@ -246,7 +248,7 @@ export function AppointmentForm({
               // Delay to allow click on dropdown
               setTimeout(() => setShowContactDropdown(false), 200);
             }}
-            placeholder="Search contacts..."
+            placeholder="Rechercher des contacts..."
             className={cn(
               "h-9 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm text-zinc-900",
               "placeholder:text-zinc-400 transition-colors",
@@ -281,11 +283,11 @@ export function AppointmentForm({
           <div className="absolute top-full left-0 right-0 z-20 mt-1 max-h-48 overflow-y-auto rounded-lg border border-zinc-200 bg-white shadow-lg">
             {contactsLoading ? (
               <div className="px-3 py-2 text-sm text-zinc-400">
-                Searching...
+                Recherche...
               </div>
             ) : contacts.length === 0 ? (
               <div className="px-3 py-2 text-sm text-zinc-400">
-                No contacts found
+                Aucun contact trouvé
               </div>
             ) : (
               contacts.map((c) => (
@@ -305,23 +307,23 @@ export function AppointmentForm({
 
       {isEditMode && (
         <Select
-          label="Status"
+          label="Statut"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           options={[
-            { value: "scheduled", label: "Scheduled" },
-            { value: "completed", label: "Completed" },
-            { value: "cancelled", label: "Cancelled" },
+            { value: "scheduled", label: "Planifié" },
+            { value: "completed", label: "Terminé" },
+            { value: "cancelled", label: "Annulé" },
           ]}
         />
       )}
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="secondary" onClick={onCancel}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          {isEditMode ? "Update" : "Create"} Appointment
+          {isEditMode ? "Modifier" : "Créer"} le rendez-vous
         </Button>
       </div>
     </form>

@@ -135,7 +135,7 @@ export default function ConversationsPage() {
   const tabs: { key: TabKey; label: string; icon: typeof MessageSquare }[] = [
     { key: "sms", label: "SMS", icon: MessageSquare },
     { key: "email", label: "Email", icon: Mail },
-    { key: "calls", label: "Calls", icon: Phone },
+    { key: "calls", label: "Appels", icon: Phone },
   ];
 
   return (
@@ -152,7 +152,7 @@ export default function ConversationsPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
               <Input
-                placeholder="Search contacts..."
+                placeholder="Rechercher des contacts..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -180,7 +180,7 @@ export default function ConversationsPage() {
             ) : contacts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <MessageSquare className="mb-2 h-8 w-8 text-zinc-300" />
-                <p className="text-sm text-zinc-400">No contacts found.</p>
+                <p className="text-sm text-zinc-400">Aucun contact trouvé.</p>
               </div>
             ) : (
               <div className="flex flex-col">
@@ -216,7 +216,7 @@ export default function ConversationsPage() {
                           )}
                         </div>
                         <p className="truncate text-xs text-zinc-500">
-                          {contact.email || contact.phone || "No contact info"}
+                          {contact.email || contact.phone || "Aucune info de contact"}
                         </p>
                       </div>
                     </button>
@@ -233,7 +233,7 @@ export default function ConversationsPage() {
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <MessageSquare className="h-10 w-10 text-zinc-300" />
               <p className="text-sm text-zinc-400">
-                Select a contact to view conversation
+                Sélectionnez un contact pour voir la conversation
               </p>
             </div>
           ) : (

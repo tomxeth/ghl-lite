@@ -47,10 +47,10 @@ interface OpportunityRow {
 }
 
 const STATUS_OPTIONS = [
-  { value: "all", label: "All Statuses" },
-  { value: "open", label: "Open" },
-  { value: "won", label: "Won" },
-  { value: "lost", label: "Lost" },
+  { value: "all", label: "Tous les statuts" },
+  { value: "open", label: "Ouvert" },
+  { value: "won", label: "Gagné" },
+  { value: "lost", label: "Perdu" },
 ];
 
 function getStatusVariant(status: string) {
@@ -138,7 +138,7 @@ export default function OpportunitiesPage() {
     <div className="flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900">Opportunities</h1>
+        <h1 className="text-xl font-semibold text-zinc-900">Opportunités</h1>
       </div>
 
       {/* Search + Filters */}
@@ -146,7 +146,7 @@ export default function OpportunitiesPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <Input
-            placeholder="Search deals..."
+            placeholder="Rechercher des affaires..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -166,7 +166,7 @@ export default function OpportunitiesPage() {
         {pipelines.length > 0 && (
           <Select
             options={[
-              { value: "", label: "All Pipelines" },
+              { value: "", label: "Tous les pipelines" },
               ...pipelines.map((p) => ({ value: p.id, label: p.name })),
             ]}
             value={pipelineFilter}
@@ -186,22 +186,22 @@ export default function OpportunitiesPage() {
             <thead>
               <tr className="border-b border-zinc-200 bg-zinc-50">
                 <th className="px-4 py-3 text-left font-medium text-zinc-600">
-                  Title
+                  Titre
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-zinc-600">
                   Contact
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-zinc-600">
-                  Stage
+                  Étape
                 </th>
                 <th className="px-4 py-3 text-right font-medium text-zinc-600">
-                  Value
+                  Valeur
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-zinc-600">
-                  Status
+                  Statut
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-zinc-600">
-                  Created
+                  Créé
                 </th>
               </tr>
             </thead>
@@ -237,7 +237,7 @@ export default function OpportunitiesPage() {
                   >
                     <div className="flex flex-col items-center gap-2">
                       <Target className="h-8 w-8 text-zinc-300" />
-                      <p>No opportunities found</p>
+                      <p>Aucune opportunité trouvée</p>
                     </div>
                   </td>
                 </tr>
@@ -286,7 +286,7 @@ export default function OpportunitiesPage() {
       {total > 0 && (
         <div className="flex items-center justify-between text-sm text-zinc-500">
           <span>
-            Showing {startItem}-{endItem} of {total}
+            Affichage {startItem}-{endItem} sur {total}
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -296,7 +296,7 @@ export default function OpportunitiesPage() {
               onClick={() => setPage((p) => p - 1)}
             >
               <ChevronLeft className="h-4 w-4" />
-              Prev
+              Préc.
             </Button>
             <Button
               variant="secondary"
@@ -304,7 +304,7 @@ export default function OpportunitiesPage() {
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
-              Next
+              Suiv.
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

@@ -37,13 +37,13 @@ export default function InvitePage({
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.error || "Invalid invite");
+          setError(data.error || "Invitation invalide");
           return;
         }
 
         setInvite(data.data);
       } catch {
-        setError("Failed to load invite details");
+        setError("Impossible de charger les détails de l'invitation");
       } finally {
         setLoading(false);
       }
@@ -74,14 +74,14 @@ export default function InvitePage({
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to accept invite");
+        setError(data.error || "Impossible d'accepter l'invitation");
         return;
       }
 
       setAccepted(true);
       setTimeout(() => router.push("/settings"), 1500);
     } catch {
-      setError("An unexpected error occurred");
+      setError("Une erreur inattendue s'est produite");
     } finally {
       setAccepting(false);
     }
@@ -123,7 +123,7 @@ export default function InvitePage({
             <p className="text-sm text-zinc-600">{error}</p>
             <Link href="/login">
               <Button variant="secondary" size="sm">
-                Go to Login
+                Aller à la connexion
               </Button>
             </Link>
           </div>
@@ -141,9 +141,9 @@ export default function InvitePage({
               <CheckCircle2 className="h-6 w-6 text-green-600" />
             </div>
             <p className="text-sm font-medium text-zinc-900">
-              You have joined {invite?.teamName}!
+              Vous avez rejoint {invite?.teamName} !
             </p>
-            <p className="text-xs text-zinc-500">Redirecting to settings...</p>
+            <p className="text-xs text-zinc-500">Redirection vers les paramètres...</p>
           </div>
         </Card>
       </div>
@@ -159,22 +159,22 @@ export default function InvitePage({
           </div>
 
           <CardHeader className="p-0">
-            <CardTitle className="text-lg">Team Invitation</CardTitle>
+            <CardTitle className="text-lg">Invitation d'équipe</CardTitle>
           </CardHeader>
 
           <p className="text-sm text-zinc-600">
-            You have been invited to join{" "}
+            Vous avez été invité(e) à rejoindre{" "}
             <span className="font-semibold text-zinc-900">
               {invite?.teamName}
             </span>{" "}
-            as a{" "}
+            en tant que{" "}
             <Badge variant={roleBadgeVariant(invite?.role || "member")}>
               {invite?.role}
             </Badge>
           </p>
 
           <p className="text-xs text-zinc-400">
-            Invited by {invite?.inviterName}
+            Invité(e) par {invite?.inviterName}
           </p>
 
           {error && (
@@ -189,16 +189,16 @@ export default function InvitePage({
               loading={accepting}
               className="w-full"
             >
-              Accept Invite
+              Accepter l'invitation
             </Button>
           ) : (
             <div className="flex flex-col gap-2 w-full">
               <Link href={`/register?invite=${token}`} className="w-full">
-                <Button className="w-full">Register to Accept</Button>
+                <Button className="w-full">S'inscrire pour accepter</Button>
               </Link>
               <Link href={`/login?invite=${token}`} className="w-full">
                 <Button variant="secondary" className="w-full">
-                  Sign In to Accept
+                  Se connecter pour accepter
                 </Button>
               </Link>
             </div>

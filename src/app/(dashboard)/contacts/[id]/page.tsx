@@ -302,10 +302,10 @@ export default function ContactDetailPage({
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <h2 className="text-lg font-semibold text-zinc-900">
-          Contact not found
+          Contact introuvable
         </h2>
         <p className="mt-1 text-sm text-zinc-500">
-          The contact you are looking for does not exist.
+          Le contact que vous recherchez n'existe pas.
         </p>
         <Button
           variant="secondary"
@@ -313,7 +313,7 @@ export default function ContactDetailPage({
           onClick={() => router.push("/contacts")}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Contacts
+          Retour aux Contacts
         </Button>
       </div>
     );
@@ -364,12 +364,12 @@ export default function ContactDetailPage({
     },
     {
       value: "calls",
-      label: "Calls",
+      label: "Appels",
       icon: <Phone className="h-3.5 w-3.5" />,
       count: calls.length,
     },
     { value: "notes", label: "Notes", icon: null },
-    { value: "deals", label: "Deals", icon: null },
+    { value: "deals", label: "Affaires", icon: null },
   ];
 
   return (
@@ -382,7 +382,7 @@ export default function ContactDetailPage({
           onClick={() => router.push("/contacts")}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Contacts
+          Retour aux Contacts
         </Button>
       </div>
 
@@ -422,7 +422,7 @@ export default function ContactDetailPage({
                 size="sm"
                 onClick={() => setEditOpen(true)}
               >
-                Edit
+                Modifier
               </Button>
             </div>
           </Card>
@@ -503,7 +503,7 @@ export default function ContactDetailPage({
                 {/* Add note */}
                 <div className="flex flex-col gap-2">
                   <Textarea
-                    placeholder="Add a note..."
+                    placeholder="Ajouter une note..."
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
                     rows={3}
@@ -515,7 +515,7 @@ export default function ContactDetailPage({
                       loading={addingNote}
                       onClick={handleAddNote}
                     >
-                      Add Note
+                      Ajouter une note
                     </Button>
                   </div>
                 </div>
@@ -525,7 +525,7 @@ export default function ContactDetailPage({
                   <SkeletonText lines={4} />
                 ) : notes.length === 0 ? (
                   <p className="py-6 text-center text-sm text-zinc-400">
-                    No notes yet.
+                    Aucune note pour le moment.
                   </p>
                 ) : (
                   <div className="space-y-3">
@@ -546,7 +546,7 @@ export default function ContactDetailPage({
                           <button
                             onClick={() => handleDeleteNote(note.id)}
                             className="text-zinc-400 hover:text-red-600 transition-colors cursor-pointer"
-                            aria-label="Delete note"
+                            aria-label="Supprimer la note"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -562,7 +562,7 @@ export default function ContactDetailPage({
           {activeTab === "deals" && (
             <Card>
               <div className="py-8 text-center text-sm text-zinc-400">
-                No deals yet.
+                Aucune affaire pour le moment.
               </div>
             </Card>
           )}
@@ -573,7 +573,7 @@ export default function ContactDetailPage({
           {/* Contact info card */}
           <Card>
             <CardHeader>
-              <CardTitle>Contact Info</CardTitle>
+              <CardTitle>Infos contact</CardTitle>
             </CardHeader>
 
             <dl className="space-y-3 text-sm">
@@ -581,6 +581,7 @@ export default function ContactDetailPage({
                 <Mail className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
                   <dt className="text-zinc-500">Email</dt>
+
                   <dd className="text-zinc-900">
                     {contact.email || "--"}
                   </dd>
@@ -589,7 +590,7 @@ export default function ContactDetailPage({
               <div className="flex items-start gap-3">
                 <Phone className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
-                  <dt className="text-zinc-500">Phone</dt>
+                  <dt className="text-zinc-500">Téléphone</dt>
                   <dd className="text-zinc-900">
                     {contact.phone ? formatPhone(contact.phone) : "--"}
                   </dd>
@@ -598,7 +599,7 @@ export default function ContactDetailPage({
               <div className="flex items-start gap-3">
                 <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
-                  <dt className="text-zinc-500">Company</dt>
+                  <dt className="text-zinc-500">Entreprise</dt>
                   <dd className="text-zinc-900">
                     {contact.company || "--"}
                   </dd>
@@ -607,7 +608,7 @@ export default function ContactDetailPage({
               <div className="flex items-start gap-3">
                 <Calendar className="h-4 w-4 mt-0.5 shrink-0 text-zinc-400" />
                 <div>
-                  <dt className="text-zinc-500">Created</dt>
+                  <dt className="text-zinc-500">Créé</dt>
                   <dd className="text-zinc-900">
                     {formatDistanceToNow(new Date(contact.createdAt), {
                       addSuffix: true,
@@ -620,6 +621,7 @@ export default function ContactDetailPage({
                   <div className="h-4 w-4 shrink-0" />
                   <div>
                     <dt className="text-zinc-500">Source</dt>
+
                     <dd className="text-zinc-900">
                       <Badge variant="default">{contact.source}</Badge>
                     </dd>
@@ -645,7 +647,7 @@ export default function ContactDetailPage({
           {/* Quick Actions — now functional */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>Actions rapides</CardTitle>
             </CardHeader>
             <div className="flex flex-col gap-2">
               <Button
@@ -655,7 +657,7 @@ export default function ContactDetailPage({
                 disabled={!contact.phone}
               >
                 <MessageSquare className="h-4 w-4" />
-                {contact.phone ? "Send SMS" : "No phone number"}
+                {contact.phone ? "Envoyer un SMS" : "Pas de numéro de téléphone"}
               </Button>
               <Button
                 variant="secondary"
@@ -664,7 +666,7 @@ export default function ContactDetailPage({
                 disabled={!contact.email}
               >
                 <Mail className="h-4 w-4" />
-                {contact.email ? "Send Email" : "No email address"}
+                {contact.email ? "Envoyer un email" : "Pas d'adresse email"}
               </Button>
               <Button
                 variant="secondary"
@@ -673,7 +675,7 @@ export default function ContactDetailPage({
                 disabled={!contact.phone}
               >
                 <Phone className="h-4 w-4" />
-                {contact.phone ? "Call" : "No phone number"}
+                {contact.phone ? "Appeler" : "Pas de numéro de téléphone"}
               </Button>
             </div>
           </Card>
@@ -681,20 +683,20 @@ export default function ContactDetailPage({
           {/* Upcoming Appointments */}
           <Card>
             <CardHeader>
-              <CardTitle>Upcoming Appointments</CardTitle>
+              <CardTitle>Prochains rendez-vous</CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push("/calendar")}
               >
-                View all
+                Voir tout
               </Button>
             </CardHeader>
             {appointmentsLoading ? (
               <SkeletonText lines={3} />
             ) : contactAppointments.length === 0 ? (
               <p className="py-4 text-center text-sm text-zinc-400">
-                No upcoming appointments.
+                Aucun rendez-vous à venir.
               </p>
             ) : (
               <div className="space-y-2">
@@ -727,7 +729,7 @@ export default function ContactDetailPage({
       <Modal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        title="Edit Contact"
+        title="Modifier le contact"
         className="max-w-xl"
       >
         <ContactForm

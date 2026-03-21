@@ -150,7 +150,7 @@ function TagPicker({
           </Badge>
         ))}
         {currentTags.length === 0 && (
-          <span className="text-sm text-zinc-400">No tags</span>
+          <span className="text-sm text-zinc-400">Aucun tag</span>
         )}
       </div>
 
@@ -163,7 +163,7 @@ function TagPicker({
           onClick={() => setOpen((prev) => !prev)}
         >
           <Plus className="h-3.5 w-3.5" />
-          Add Tag
+          Ajouter un tag
         </Button>
 
         {open && (
@@ -193,7 +193,7 @@ function TagPicker({
                 </div>
               ) : (
                 <p className="px-2 py-1.5 text-xs text-zinc-400">
-                  No more tags available
+                  Plus de tags disponibles
                 </p>
               )}
             </div>
@@ -207,7 +207,7 @@ function TagPicker({
                 className="flex gap-1.5"
               >
                 <Input
-                  placeholder="New tag..."
+                  placeholder="Nouveau tag..."
                   value={newTagName}
                   onChange={(e) => setNewTagName(e.target.value)}
                   className="h-7 text-xs"
@@ -218,7 +218,7 @@ function TagPicker({
                   disabled={!newTagName.trim() || loading}
                   className="h-7 shrink-0 px-2"
                 >
-                  Add
+                  Ajouter
                 </Button>
               </form>
             </div>

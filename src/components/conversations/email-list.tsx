@@ -35,11 +35,11 @@ interface EmailListProps {
 }
 
 const STATUS_BADGE: Record<string, { variant: "default" | "success" | "warning" | "danger"; label: string }> = {
-  sent: { variant: "default", label: "Sent" },
-  delivered: { variant: "success", label: "Delivered" },
-  opened: { variant: "success", label: "Opened" },
-  clicked: { variant: "success", label: "Clicked" },
-  failed: { variant: "danger", label: "Failed" },
+  sent: { variant: "default", label: "Envoyé" },
+  delivered: { variant: "success", label: "Livré" },
+  opened: { variant: "success", label: "Ouvert" },
+  clicked: { variant: "success", label: "Cliqué" },
+  failed: { variant: "danger", label: "Échoué" },
 };
 
 function EmailList({
@@ -71,13 +71,13 @@ function EmailList({
       <div className="border-b border-zinc-200 p-3">
         <Button size="sm" onClick={() => setComposerOpen(true)}>
           <Plus className="h-4 w-4" />
-          Compose
+          Rédiger
         </Button>
       </div>
 
       {emails.length === 0 ? (
         <div className="flex flex-1 items-center justify-center py-12">
-          <p className="text-sm text-zinc-400">No emails yet.</p>
+          <p className="text-sm text-zinc-400">Aucun email pour le moment.</p>
         </div>
       ) : (
         <div className="flex flex-col divide-y divide-zinc-200">

@@ -20,7 +20,7 @@ export default function RegisterPage() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Les mots de passe ne correspondent pas");
       return;
     }
 
@@ -36,13 +36,13 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.error || "Échec de l'inscription");
         return;
       }
 
       router.push("/contacts");
     } catch {
-      setError("An unexpected error occurred");
+      setError("Une erreur inattendue s'est produite");
     } finally {
       setLoading(false);
     }
@@ -53,18 +53,18 @@ export default function RegisterPage() {
       <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-semibold text-zinc-900">
-            Create your account
+            Créez votre compte
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Get started with GHL Lite
+            Commencez avec GHL Lite
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
-            label="Name"
+            label="Nom"
             type="text"
-            placeholder="Your name"
+            placeholder="Votre nom"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -82,9 +82,9 @@ export default function RegisterPage() {
           />
 
           <Input
-            label="Password"
+            label="Mot de passe"
             type="password"
-            placeholder="At least 8 characters"
+            placeholder="Au moins 8 caractères"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -93,9 +93,9 @@ export default function RegisterPage() {
           />
 
           <Input
-            label="Confirm password"
+            label="Confirmer le mot de passe"
             type="password"
-            placeholder="Repeat your password"
+            placeholder="Répétez votre mot de passe"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -110,17 +110,17 @@ export default function RegisterPage() {
           )}
 
           <Button type="submit" loading={loading} className="mt-2 w-full">
-            Create account
+            Créer un compte
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
-          Already have an account?{" "}
+          Vous avez déjà un compte ?{" "}
           <Link
             href="/login"
             className="font-medium text-zinc-900 hover:underline"
           >
-            Sign in
+            Se connecter
           </Link>
         </p>
       </div>

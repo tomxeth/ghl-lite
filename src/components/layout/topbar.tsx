@@ -7,9 +7,9 @@ import Link from "next/link";
 const pageTitles: Record<string, string> = {
   "/contacts": "Contacts",
   "/pipeline": "Pipeline",
-  "/opportunities": "Opportunities",
+  "/opportunities": "Opportunités",
   "/conversations": "Conversations",
-  "/settings": "Settings",
+  "/settings": "Paramètres",
 };
 
 function getPageTitle(pathname: string): string {
@@ -18,7 +18,7 @@ function getPageTitle(pathname: string): string {
       return title;
     }
   }
-  return "Dashboard";
+  return "Tableau de bord";
 }
 
 export function Topbar() {
@@ -35,7 +35,7 @@ export function Topbar() {
       <Link
         href="/contacts/new"
         className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white hover:bg-zinc-800"
-        aria-label="Quick add"
+        aria-label="Ajout rapide"
       >
         <Plus className="h-4 w-4" />
       </Link>

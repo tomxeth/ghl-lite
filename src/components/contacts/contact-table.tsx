@@ -66,18 +66,18 @@ function ContactTable({ contacts, loading }: ContactTableProps) {
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-zinc-200 text-zinc-500">
-            <th className="px-4 py-3 font-medium">Name</th>
+            <th className="px-4 py-3 font-medium">Nom</th>
             <th className="px-4 py-3 font-medium hidden sm:table-cell">
               Email
             </th>
             <th className="px-4 py-3 font-medium hidden md:table-cell">
-              Phone
+              Téléphone
             </th>
             <th className="px-4 py-3 font-medium hidden lg:table-cell">
               Tags
             </th>
             <th className="px-4 py-3 font-medium hidden xl:table-cell">
-              Created
+              Créé
             </th>
           </tr>
         </thead>
@@ -90,7 +90,7 @@ function ContactTable({ contacts, loading }: ContactTableProps) {
                 colSpan={5}
                 className="px-4 py-12 text-center text-zinc-400"
               >
-                No contacts found.
+                Aucun contact trouvé.
               </td>
             </tr>
           ) : (

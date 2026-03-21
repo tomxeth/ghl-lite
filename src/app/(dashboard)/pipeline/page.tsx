@@ -218,14 +218,14 @@ export default function PipelinePage() {
           <Kanban className="h-8 w-8 text-zinc-400" />
         </div>
         <h2 className="mt-4 text-lg font-semibold text-zinc-900">
-          No pipelines yet
+          Aucun pipeline pour le moment
         </h2>
         <p className="mt-1 text-sm text-zinc-500">
-          Create a pipeline to start tracking your deals.
+          Créez un pipeline pour commencer à suivre vos affaires.
         </p>
         <Button className="mt-4" onClick={() => router.push("/settings")}>
           <Plus className="h-4 w-4" />
-          Create Pipeline
+          Créer un pipeline
         </Button>
       </div>
     );
@@ -258,7 +258,7 @@ export default function PipelinePage() {
         <div className="flex items-center gap-3">
           {totalValue > 0 && (
             <span className="text-sm font-medium text-zinc-600">
-              Total: {formatCurrency(totalValue)}
+              Total : {formatCurrency(totalValue)}
             </span>
           )}
           <Button
@@ -266,12 +266,12 @@ export default function PipelinePage() {
             size="sm"
             onClick={() => router.push("/opportunities")}
           >
-            Table View
+            Vue tableau
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button onClick={() => setAddDealOpen(true)}>
             <Plus className="h-4 w-4" />
-            Add Deal
+            Ajouter une affaire
           </Button>
         </div>
       </div>
@@ -299,7 +299,7 @@ export default function PipelinePage() {
       <Modal
         open={addDealOpen}
         onClose={() => setAddDealOpen(false)}
-        title="Add Deal"
+        title="Ajouter une affaire"
         className="max-w-lg"
       >
         <OpportunityForm

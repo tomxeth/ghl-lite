@@ -75,7 +75,7 @@ function KanbanColumn({ stage }: KanbanColumnProps) {
               isOver && "border-blue-300 text-blue-500"
             )}
           >
-            {isOver ? "Drop here" : "No deals"}
+            {isOver ? "Déposer ici" : "Aucune affaire"}
           </div>
         )}
       </div>

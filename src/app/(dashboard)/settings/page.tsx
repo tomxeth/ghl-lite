@@ -82,8 +82,8 @@ const STAGE_COLORS = [
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
-  { value: "member", label: "Member" },
-  { value: "viewer", label: "Viewer" },
+  { value: "member", label: "Membre" },
+  { value: "viewer", label: "Lecteur" },
 ];
 
 function RoleIcon({ role, className }: { role: string; className?: string }) {
@@ -330,7 +330,7 @@ export default function SettingsPage() {
         fetchPipelines();
       } else {
         const json = await res.json();
-        alert(json.error || "Failed to delete stage");
+        alert(json.error || "Échec de la suppression de l'étape");
       }
     } catch {
       // silently fail
@@ -378,19 +378,19 @@ export default function SettingsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setInviteError(data.error || "Failed to send invite");
+        setInviteError(data.error || "Échec de l'envoi de l'invitation");
         return;
       }
 
       const msg = data.data.emailSent
-        ? `Invite sent to ${inviteEmail}`
-        : "Invite created. Copy the link to share it.";
+        ? `Invitation envoyée à ${inviteEmail}`
+        : "Invitation créée. Copiez le lien pour le partager.";
       setInviteSuccess(msg);
       setInviteEmail("");
       setInviteRole("member");
       fetchTeam();
     } catch {
-      setInviteError("An unexpected error occurred");
+      setInviteError("Une erreur inattendue s'est produite");
     } finally {
       setInviteLoading(false);
     }
@@ -439,15 +439,15 @@ export default function SettingsPage() {
   }
 
   const tabs: { value: TabValue; label: string; icon: typeof User }[] = [
-    { value: "profile", label: "Profile", icon: User },
-    { value: "team", label: "Team", icon: Users },
+    { value: "profile", label: "Profil", icon: User },
+    { value: "team", label: "Équipe", icon: Users },
     { value: "pipelines", label: "Pipelines", icon: Kanban },
-    { value: "integrations", label: "Integrations", icon: Plug },
+    { value: "integrations", label: "Intégrations", icon: Plug },
   ];
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-zinc-900">Settings</h1>
+      <h1 className="text-xl font-semibold text-zinc-900">Paramètres</h1>
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-zinc-200">
@@ -474,11 +474,11 @@ export default function SettingsPage() {
         <div className="max-w-lg space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Account</CardTitle>
+              <CardTitle>Compte</CardTitle>
             </CardHeader>
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-zinc-500">Name</dt>
+                <dt className="text-zinc-500">Nom</dt>
                 <dd className="mt-0.5 text-zinc-900 font-medium">
                   {user.name}
                 </dd>
@@ -492,10 +492,10 @@ export default function SettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Password</CardTitle>
+              <CardTitle>Mot de passe</CardTitle>
             </CardHeader>
             <p className="text-sm text-zinc-500">
-              Password change functionality is coming soon.
+              La fonctionnalité de changement de mot de passe arrive bientôt.
             </p>
           </Card>
         </div>
@@ -514,11 +514,11 @@ export default function SettingsPage() {
             /* No team — show create team */
             <Card>
               <CardHeader>
-                <CardTitle>Create a Team</CardTitle>
+                <CardTitle>Créer une équipe</CardTitle>
               </CardHeader>
               <p className="text-sm text-zinc-500 mb-4">
-                Create a team to collaborate with others. Team members share
-                access to contacts, pipelines, and opportunities.
+                Créez une équipe pour collaborer avec d'autres. Les membres de l'équipe
+                partagent l'accès aux contacts, pipelines et opportunités.
               </p>
               <form
                 onSubmit={handleCreateTeam}
@@ -526,8 +526,8 @@ export default function SettingsPage() {
               >
                 <div className="flex-1">
                   <Input
-                    label="Team Name"
-                    placeholder="My Team"
+                    label="Nom de l'équipe"
+                    placeholder="Mon équipe"
                     value={createTeamName}
                     onChange={(e) => setCreateTeamName(e.target.value)}
                     required
@@ -535,7 +535,7 @@ export default function SettingsPage() {
                 </div>
                 <Button type="submit" loading={createTeamLoading}>
                   <Plus className="h-4 w-4" />
-                  Create Team
+                  Créer l'équipe
                 </Button>
               </form>
             </Card>
@@ -555,7 +555,7 @@ export default function SettingsPage() {
                   </Badge>
                 </CardHeader>
                 <p className="text-sm text-zinc-500">
-                  {team.members.length} member{team.members.length !== 1 && "s"}
+                  {team.members.length} membre{team.members.length !== 1 && "s"}
                 </p>
               </Card>
 
@@ -563,7 +563,7 @@ export default function SettingsPage() {
               <Card noPadding>
                 <div className="px-4 py-3 border-b border-zinc-100">
                   <h3 className="text-sm font-semibold text-zinc-900">
-                    Members
+                    Membres
                   </h3>
                 </div>
                 <div className="divide-y divide-zinc-100">
@@ -586,7 +586,7 @@ export default function SettingsPage() {
                             {member.name}
                             {member.id === user.id && (
                               <span className="ml-1.5 text-xs text-zinc-400">
-                                (you)
+                                (vous)
                               </span>
                             )}
                           </p>
@@ -619,7 +619,7 @@ export default function SettingsPage() {
                               size="sm"
                               onClick={() => setRemoveMemberId(member.id)}
                               className="text-zinc-400 hover:text-red-600"
-                              title="Remove member"
+                              title="Retirer le membre"
                             >
                               <UserMinus className="h-4 w-4" />
                             </Button>
@@ -634,7 +634,7 @@ export default function SettingsPage() {
               {canManageTeam(user.role) && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Invite Member</CardTitle>
+                    <CardTitle>Inviter un membre</CardTitle>
                   </CardHeader>
                   <form
                     onSubmit={handleSendInvite}
@@ -652,7 +652,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="w-32">
                       <Select
-                        label="Role"
+                        label="Rôle"
                         options={ROLE_OPTIONS}
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value)}
@@ -660,7 +660,7 @@ export default function SettingsPage() {
                     </div>
                     <Button type="submit" loading={inviteLoading}>
                       <Plus className="h-4 w-4" />
-                      Invite
+                      Inviter
                     </Button>
                   </form>
                   {inviteError && (
@@ -681,7 +681,7 @@ export default function SettingsPage() {
                 <Card noPadding>
                   <div className="px-4 py-3 border-b border-zinc-100">
                     <h3 className="text-sm font-semibold text-zinc-900">
-                      Pending Invites
+                      Invitations en attente
                     </h3>
                   </div>
                   <div className="divide-y divide-zinc-100">
@@ -695,7 +695,7 @@ export default function SettingsPage() {
                             {invite.email}
                           </p>
                           <p className="text-xs text-zinc-500">
-                            Invited as{" "}
+                            Invité en tant que{" "}
                             <Badge
                               variant={roleBadgeVariant(invite.role)}
                               className="ml-1"
@@ -708,17 +708,17 @@ export default function SettingsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleCopyInviteLink(invite.token)}
-                          title="Copy invite link"
+                          title="Copier le lien d'invitation"
                         >
                           {copiedToken === invite.token ? (
                             <>
                               <Check className="h-3.5 w-3.5 text-green-600" />
-                              <span className="text-green-600">Copied</span>
+                              <span className="text-green-600">Copié</span>
                             </>
                           ) : (
                             <>
                               <Copy className="h-3.5 w-3.5" />
-                              Copy Link
+                              Copier le lien
                             </>
                           )}
                         </Button>
@@ -737,14 +737,14 @@ export default function SettingsPage() {
         <div className="max-w-2xl space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-zinc-500">
-              Manage your sales pipelines and stages.
+              Gérez vos pipelines de vente et leurs étapes.
             </p>
             <Button
               size="sm"
               onClick={() => setCreatePipelineOpen(true)}
             >
               <Plus className="h-4 w-4" />
-              Add Pipeline
+              Ajouter un pipeline
             </Button>
           </div>
 
@@ -761,7 +761,7 @@ export default function SettingsPage() {
               <div className="py-8 text-center">
                 <Kanban className="mx-auto h-8 w-8 text-zinc-300" />
                 <p className="mt-2 text-sm text-zinc-500">
-                  No pipelines yet. Create one to get started.
+                  Aucun pipeline. Créez-en un pour commencer.
                 </p>
               </div>
             </Card>
@@ -784,7 +784,7 @@ export default function SettingsPage() {
                         )}
                         {pipeline.name}
                         <span className="text-xs font-normal text-zinc-400">
-                          ({pipeline.stages.length} stages)
+                          ({pipeline.stages.length} étapes)
                         </span>
                       </button>
                       <div className="flex items-center gap-1">
@@ -797,7 +797,7 @@ export default function SettingsPage() {
                           }}
                         >
                           <Plus className="h-3.5 w-3.5" />
-                          Stage
+                          Étape
                         </Button>
                         <Button
                           variant="ghost"
@@ -815,7 +815,7 @@ export default function SettingsPage() {
                       <div className="px-4 py-2">
                         {pipeline.stages.length === 0 ? (
                           <p className="py-4 text-center text-sm text-zinc-400">
-                            No stages. Add one to get started.
+                            Aucune étape. Ajoutez-en une pour commencer.
                           </p>
                         ) : (
                           <div className="space-y-1">
@@ -892,7 +892,7 @@ export default function SettingsPage() {
                                         )
                                       }
                                       className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-600 transition-opacity cursor-pointer"
-                                      title="Delete stage"
+                                      title="Supprimer l'étape"
                                     >
                                       <Trash2 className="h-3.5 w-3.5" />
                                     </button>
@@ -908,7 +908,7 @@ export default function SettingsPage() {
                           <div className="mt-2 flex items-center gap-2 rounded-md border border-zinc-200 px-2 py-1.5">
                             <input
                               autoFocus
-                              placeholder="Stage name"
+                              placeholder="Nom de l'étape"
                               value={newStageName}
                               onChange={(e) => setNewStageName(e.target.value)}
                               onKeyDown={(e) => {
@@ -927,7 +927,7 @@ export default function SettingsPage() {
                               loading={addStageLoading}
                               disabled={!newStageName.trim()}
                             >
-                              Add
+                              Ajouter
                             </Button>
                             <button
                               onClick={() => setAddingStageTo(null)}
@@ -959,14 +959,14 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <CardTitle>Twilio</CardTitle>
-                  <p className="text-xs text-zinc-500">SMS & Voice calls</p>
+                  <p className="text-xs text-zinc-500">SMS et appels vocaux</p>
                 </div>
               </div>
               <TwilioStatus />
             </CardHeader>
             <p className="text-sm text-zinc-500">
-              Connect your Twilio account to send SMS messages and make phone
-              calls directly from the CRM.
+              Connectez votre compte Twilio pour envoyer des SMS et passer des appels
+              téléphoniques directement depuis le CRM.
             </p>
           </Card>
 
@@ -979,14 +979,14 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <CardTitle>Mailgun</CardTitle>
-                  <p className="text-xs text-zinc-500">Email delivery</p>
+                  <p className="text-xs text-zinc-500">Envoi d'emails</p>
                 </div>
               </div>
               <MailgunStatus />
             </CardHeader>
             <p className="text-sm text-zinc-500">
-              Connect Mailgun to send transactional emails with open and click
-              tracking.
+              Connectez Mailgun pour envoyer des emails transactionnels avec suivi
+              d'ouverture et de clic.
             </p>
           </Card>
         </div>
@@ -996,20 +996,20 @@ export default function SettingsPage() {
       <Modal
         open={createPipelineOpen}
         onClose={() => setCreatePipelineOpen(false)}
-        title="Create Pipeline"
+        title="Créer un pipeline"
         className="max-w-sm"
       >
         <form onSubmit={handleCreatePipeline} className="flex flex-col gap-4">
           <Input
-            label="Pipeline Name"
-            placeholder="Sales Pipeline"
+            label="Nom du pipeline"
+            placeholder="Pipeline de vente"
             value={newPipelineName}
             onChange={(e) => setNewPipelineName(e.target.value)}
             required
           />
           <p className="text-xs text-zinc-500">
-            Default stages will be created: New, Qualified, Proposal, Won. You
-            can customize them after creation.
+            Des étapes par défaut seront créées : Nouveau, Qualifié, Proposition, Gagné. Vous
+            pourrez les personnaliser après la création.
           </p>
           <div className="flex items-center justify-end gap-3">
             <Button
@@ -1018,10 +1018,10 @@ export default function SettingsPage() {
               onClick={() => setCreatePipelineOpen(false)}
               disabled={createPipelineLoading}
             >
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" loading={createPipelineLoading}>
-              Create
+              Créer
             </Button>
           </div>
         </form>
@@ -1031,12 +1031,12 @@ export default function SettingsPage() {
       <Modal
         open={!!deletePipelineId}
         onClose={() => setDeletePipelineId(null)}
-        title="Delete Pipeline"
+        title="Supprimer le pipeline"
         className="max-w-sm"
       >
         <p className="text-sm text-zinc-600">
-          Are you sure you want to delete this pipeline? All stages and
-          associated opportunities will be permanently removed.
+          Êtes-vous sûr de vouloir supprimer ce pipeline ? Toutes les étapes et
+          opportunités associées seront définitivement supprimées.
         </p>
         <div className="mt-4 flex items-center justify-end gap-3">
           <Button
@@ -1044,14 +1044,14 @@ export default function SettingsPage() {
             onClick={() => setDeletePipelineId(null)}
             disabled={deletePipelineLoading}
           >
-            Cancel
+            Annuler
           </Button>
           <Button
             variant="danger"
             onClick={handleDeletePipeline}
             loading={deletePipelineLoading}
           >
-            Delete Pipeline
+            Supprimer le pipeline
           </Button>
         </div>
       </Modal>
@@ -1060,12 +1060,12 @@ export default function SettingsPage() {
       <Modal
         open={!!removeMemberId}
         onClose={() => setRemoveMemberId(null)}
-        title="Remove Member"
+        title="Retirer le membre"
         className="max-w-sm"
       >
         <p className="text-sm text-zinc-600">
-          Are you sure you want to remove this member from the team? They will
-          lose access to shared data.
+          Êtes-vous sûr de vouloir retirer ce membre de l'équipe ? Il perdra
+          l'accès aux données partagées.
         </p>
         <div className="mt-4 flex items-center justify-end gap-3">
           <Button
@@ -1073,14 +1073,14 @@ export default function SettingsPage() {
             onClick={() => setRemoveMemberId(null)}
             disabled={removeMemberLoading}
           >
-            Cancel
+            Annuler
           </Button>
           <Button
             variant="danger"
             onClick={handleRemoveMember}
             loading={removeMemberLoading}
           >
-            Remove
+            Retirer
           </Button>
         </div>
       </Modal>
@@ -1102,7 +1102,7 @@ function TwilioStatus() {
 
   return (
     <Badge variant={status === "connected" ? "success" : "default"}>
-      {status === "connected" ? "Connected" : "Not configured"}
+      {status === "connected" ? "Connecté" : "Non configuré"}
     </Badge>
   );
 }
@@ -1118,7 +1118,7 @@ function MailgunStatus() {
 
   return (
     <Badge variant={status === "connected" ? "success" : "default"}>
-      {status === "connected" ? "Connected" : "Not configured"}
+      {status === "connected" ? "Connecté" : "Non configuré"}
     </Badge>
   );
 }

@@ -36,15 +36,15 @@ const STATUS_BADGE: Record<
   string,
   { variant: "default" | "success" | "warning" | "danger"; label: string }
 > = {
-  initiated: { variant: "warning", label: "Initiated" },
-  ringing: { variant: "warning", label: "Ringing" },
-  "in-progress": { variant: "success", label: "In Progress" },
-  answered: { variant: "success", label: "Answered" },
-  completed: { variant: "default", label: "Completed" },
-  busy: { variant: "danger", label: "Busy" },
-  "no-answer": { variant: "danger", label: "No Answer" },
-  failed: { variant: "danger", label: "Failed" },
-  canceled: { variant: "danger", label: "Canceled" },
+  initiated: { variant: "warning", label: "Initié" },
+  ringing: { variant: "warning", label: "Sonnerie" },
+  "in-progress": { variant: "success", label: "En cours" },
+  answered: { variant: "success", label: "Répondu" },
+  completed: { variant: "default", label: "Terminé" },
+  busy: { variant: "danger", label: "Occupé" },
+  "no-answer": { variant: "danger", label: "Sans réponse" },
+  failed: { variant: "danger", label: "Échoué" },
+  canceled: { variant: "danger", label: "Annulé" },
 };
 
 function CallLog({
@@ -87,7 +87,7 @@ function CallLog({
 
       {calls.length === 0 ? (
         <div className="flex flex-1 items-center justify-center py-12">
-          <p className="text-sm text-zinc-400">No calls yet.</p>
+          <p className="text-sm text-zinc-400">Aucun appel pour le moment.</p>
         </div>
       ) : (
         <div className="flex flex-col divide-y divide-zinc-200">
@@ -121,7 +121,7 @@ function CallLog({
                     <div className="flex items-center gap-1.5">
                       <Phone className="h-3.5 w-3.5 text-zinc-500" />
                       <span className="text-sm font-medium text-zinc-900">
-                        {isOutbound ? "Outbound call" : "Inbound call"}
+                        {isOutbound ? "Appel sortant" : "Appel entrant"}
                       </span>
                     </div>
                     <Badge variant={statusConfig.variant}>
@@ -131,7 +131,7 @@ function CallLog({
 
                   <div className="mt-1 flex items-center gap-3 text-xs text-zinc-400">
                     {call.duration != null && (
-                      <span>Duration: {formatDuration(call.duration)}</span>
+                      <span>Durée : {formatDuration(call.duration)}</span>
                     )}
                     <span>
                       {formatDistanceToNow(new Date(call.createdAt), {

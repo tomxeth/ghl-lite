@@ -44,55 +44,55 @@ function EmailComposer({
       });
 
       if (res.ok) {
-        toast.success("Email sent successfully");
+        toast.success("Email envoyé avec succès");
         setSubject("");
         setBody("");
         onSent();
         onClose();
       } else {
         const json = await res.json();
-        toast.error(json.error || "Failed to send email");
+        toast.error(json.error || "Échec de l'envoi de l'email");
       }
     } catch {
-      toast.error("An unexpected error occurred");
+      toast.error("Une erreur inattendue s'est produite");
     } finally {
       setSending(false);
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Compose Email">
+    <Modal open={open} onClose={onClose} title="Rédiger un email">
       <div className="flex flex-col gap-4">
         {!contactEmail && (
           <p className="text-sm text-red-600">
-            This contact has no email address.
+            Ce contact n'a pas d'adresse email.
           </p>
         )}
 
         <div className="text-sm text-zinc-500">
-          To: {contactEmail || "No email"}
+          À : {contactEmail || "Pas d'email"}
         </div>
 
         <Input
-          label="Subject"
+          label="Objet"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          placeholder="Email subject..."
+          placeholder="Objet de l'email..."
           disabled={!contactEmail || sending}
         />
 
         <Textarea
-          label="Body"
+          label="Corps"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Write your email..."
+          placeholder="Rédigez votre email..."
           rows={6}
           disabled={!contactEmail || sending}
         />
 
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={onClose}>
-            Cancel
+            Annuler
           </Button>
           <Button
             onClick={handleSend}
@@ -100,7 +100,7 @@ function EmailComposer({
             loading={sending}
           >
             <Send className="h-4 w-4" />
-            Send
+            Envoyer
           </Button>
         </div>
       </div>

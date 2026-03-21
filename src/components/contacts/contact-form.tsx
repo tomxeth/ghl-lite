@@ -32,10 +32,10 @@ interface ContactFormProps {
 }
 
 const SOURCE_OPTIONS = [
-  { value: "Manual", label: "Manual" },
+  { value: "Manual", label: "Manuel" },
   { value: "Import", label: "Import" },
-  { value: "Web Form", label: "Web Form" },
-  { value: "Referral", label: "Referral" },
+  { value: "Web Form", label: "Formulaire web" },
+  { value: "Referral", label: "Recommandation" },
 ];
 
 function ContactForm({
@@ -58,10 +58,10 @@ function ContactForm({
 
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
-    if (!firstName.trim()) newErrors.firstName = "First name is required";
-    if (!lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!firstName.trim()) newErrors.firstName = "Le prénom est requis";
+    if (!lastName.trim()) newErrors.lastName = "Le nom est requis";
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Invalid email address";
+      newErrors.email = "Adresse email invalide";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -93,7 +93,7 @@ function ContactForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
-          label="First Name"
+          label="Prénom"
           placeholder="John"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
@@ -101,7 +101,7 @@ function ContactForm({
           required
         />
         <Input
-          label="Last Name"
+          label="Nom"
           placeholder="Doe"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
@@ -120,7 +120,7 @@ function ContactForm({
           error={errors.email}
         />
         <Input
-          label="Phone"
+          label="Téléphone"
           type="tel"
           placeholder="(555) 123-4567"
           value={phone}
@@ -130,7 +130,7 @@ function ContactForm({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
-          label="Company"
+          label="Entreprise"
           placeholder="Acme Inc."
           value={company}
           onChange={(e) => setCompany(e.target.value)}
@@ -138,7 +138,7 @@ function ContactForm({
         <Select
           label="Source"
           options={SOURCE_OPTIONS}
-          placeholder="Select source"
+          placeholder="Sélectionner la source"
           value={source}
           onChange={(e) => setSource(e.target.value)}
         />
@@ -185,10 +185,10 @@ function ContactForm({
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          Save Contact
+          Enregistrer le contact
         </Button>
       </div>
     </form>

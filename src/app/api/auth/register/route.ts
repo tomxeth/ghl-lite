@@ -3,9 +3,9 @@ import { db } from "@/lib/db";
 import { hashPassword, createSession } from "@/lib/auth";
 
 const registerSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  name: z.string().min(1, "Name is required"),
+  email: z.email("Adresse email invalide"),
+  password: z.string().min(8, "Le mot de passe doit comporter au moins 8 caractères"),
+  name: z.string().min(1, "Le nom est requis"),
 });
 
 export async function POST(request: Request) {
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const existingUser = await db.user.findUnique({ where: { email } });
     if (existingUser) {
       return Response.json(
-        { error: "A user with this email already exists" },
+        { error: "Un utilisateur avec cet email existe déjà" },
         { status: 409 }
       );
     }
@@ -54,16 +54,16 @@ export async function POST(request: Request) {
     await db.pipeline.create({
       data: {
         userId: user.id,
-        name: "Sales Pipeline",
+        name: "Pipeline de vente",
         stages: {
           create: [
-            "New Lead",
-            "Contacted",
-            "Qualified",
-            "Proposal",
-            "Negotiation",
-            "Won",
-            "Lost",
+            "Nouveau lead",
+            "Contacté",
+            "Qualifié",
+            "Proposition",
+            "Négociation",
+            "Gagné",
+            "Perdu",
           ].map((name, index) => ({
             name,
             position: index,
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     console.error("Registration error:", error);
     const message = error instanceof Error ? error.message : String(error);
     return Response.json(
-      { error: "An unexpected error occurred", details: message },
+      { error: "Une erreur inattendue s'est produite", details: message },
       { status: 500 }
     );
   }

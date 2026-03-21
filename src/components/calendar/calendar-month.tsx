@@ -41,7 +41,7 @@ const statusPillColors: Record<string, string> = {
   cancelled: "bg-red-50 text-red-700 border-red-200 line-through",
 };
 
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEKDAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 export function CalendarMonth({
   currentDate,
@@ -132,7 +132,7 @@ export function CalendarMonth({
                 ))}
                 {overflow > 0 && (
                   <span className="px-1.5 text-[11px] font-medium text-zinc-500">
-                    +{overflow} more
+                    +{overflow} autre(s)
                   </span>
                 )}
               </div>

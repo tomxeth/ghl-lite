@@ -47,13 +47,13 @@ export default function NewContactPage() {
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error || "Failed to create contact");
+        setError(json.error || "Échec de la création du contact");
         return;
       }
 
       router.push(`/contacts/${json.data.id}`);
     } catch {
-      setError("An unexpected error occurred");
+      setError("Une erreur inattendue s'est produite");
     } finally {
       setLoading(false);
     }
@@ -69,13 +69,13 @@ export default function NewContactPage() {
           onClick={() => router.push("/contacts")}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Contacts
+          Retour aux Contacts
         </Button>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>New Contact</CardTitle>
+          <CardTitle>Nouveau contact</CardTitle>
         </CardHeader>
 
         {error && (

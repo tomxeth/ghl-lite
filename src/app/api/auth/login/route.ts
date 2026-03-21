@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import { verifyPassword, createSession } from "@/lib/auth";
 
 const loginSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.email("Adresse email invalide"),
+  password: z.string().min(1, "Le mot de passe est requis"),
 });
 
 export async function POST(request: Request) {
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const user = await db.user.findUnique({ where: { email } });
     if (!user) {
       return Response.json(
-        { error: "Invalid email or password" },
+        { error: "Email ou mot de passe invalide" },
         { status: 401 }
       );
     }
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const valid = await verifyPassword(password, user.hashedPassword);
     if (!valid) {
       return Response.json(
-        { error: "Invalid email or password" },
+        { error: "Email ou mot de passe invalide" },
         { status: 401 }
       );
     }
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Login error:", error);
     return Response.json(
-      { error: "An unexpected error occurred" },
+      { error: "Une erreur inattendue s'est produite" },
       { status: 500 }
     );
   }

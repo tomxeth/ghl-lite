@@ -55,19 +55,19 @@ interface TagOption {
 // ─── Constants ──────────────────────────────────────────
 
 const TRIGGER_OPTIONS = [
-  { value: "contact_created", label: "When a contact is created" },
-  { value: "deal_stage_change", label: "When a deal changes stage" },
-  { value: "tag_added", label: "When a tag is added" },
-  { value: "appointment_created", label: "When an appointment is created" },
+  { value: "contact_created", label: "Quand un contact est créé" },
+  { value: "deal_stage_change", label: "Quand une affaire change d'étape" },
+  { value: "tag_added", label: "Quand un tag est ajouté" },
+  { value: "appointment_created", label: "Quand un rendez-vous est créé" },
 ];
 
 const ACTION_OPTIONS = [
-  { value: "send_email", label: "Send Email" },
-  { value: "send_sms", label: "Send SMS" },
-  { value: "add_tag", label: "Add Tag" },
-  { value: "remove_tag", label: "Remove Tag" },
-  { value: "move_stage", label: "Move Stage" },
-  { value: "wait", label: "Wait" },
+  { value: "send_email", label: "Envoyer un email" },
+  { value: "send_sms", label: "Envoyer un SMS" },
+  { value: "add_tag", label: "Ajouter un tag" },
+  { value: "remove_tag", label: "Retirer un tag" },
+  { value: "move_stage", label: "Déplacer l'étape" },
+  { value: "wait", label: "Attendre" },
 ];
 
 const ACTION_ICONS: Record<string, typeof Mail> = {
@@ -214,11 +214,11 @@ export default function AutomationDetailPage() {
 
   async function handleSave() {
     if (!name.trim()) {
-      setError("Name is required");
+      setError("Le nom est requis");
       return;
     }
     if (steps.length === 0) {
-      setError("At least one step is required");
+      setError("Au moins une étape est requise");
       return;
     }
 
@@ -244,7 +244,7 @@ export default function AutomationDetailPage() {
 
       if (!res.ok) {
         const json = await res.json();
-        setError(json.error || "Failed to save");
+        setError(json.error || "Échec de l'enregistrement");
         return;
       }
 
@@ -255,7 +255,7 @@ export default function AutomationDetailPage() {
         fetchAutomation();
       }
     } catch {
-      setError("An unexpected error occurred");
+      setError("Une erreur inattendue s'est produite");
     } finally {
       setSaving(false);
     }
@@ -271,8 +271,8 @@ export default function AutomationDetailPage() {
       return (
         <div className="mt-3 grid grid-cols-2 gap-3">
           <Select
-            label="Pipeline (optional)"
-            placeholder="Any pipeline"
+            label="Pipeline (optionnel)"
+            placeholder="N'importe quel pipeline"
             options={pipelines.map((p) => ({ value: p.id, label: p.name }))}
             value={(triggerConfig.pipelineId as string) || ""}
             onChange={(e) => {
@@ -284,8 +284,8 @@ export default function AutomationDetailPage() {
             }}
           />
           <Select
-            label="Stage (optional)"
-            placeholder="Any stage"
+            label="Étape (optionnelle)"
+            placeholder="N'importe quelle étape"
             options={
               selectedPipeline
                 ? selectedPipeline.stages.map((s) => ({
@@ -311,8 +311,8 @@ export default function AutomationDetailPage() {
       return (
         <div className="mt-3 max-w-xs">
           <Select
-            label="Tag (optional)"
-            placeholder="Any tag"
+            label="Tag (optionnel)"
+            placeholder="N'importe quel tag"
             options={tags.map((t) => ({ value: t.id, label: t.name }))}
             value={(triggerConfig.tagId as string) || ""}
             onChange={(e) => {
@@ -335,7 +335,7 @@ export default function AutomationDetailPage() {
         return (
           <div className="space-y-3">
             <Input
-              label="Subject"
+              label="Objet"
               placeholder="Welcome, {{firstName}}!"
               value={(step.config.subject as string) || ""}
               onChange={(e) =>
@@ -343,7 +343,7 @@ export default function AutomationDetailPage() {
               }
             />
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-zinc-700">Body</label>
+              <label className="text-sm font-medium text-zinc-700">Corps</label>
               <textarea
                 className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1"
                 rows={4}
@@ -354,7 +354,7 @@ export default function AutomationDetailPage() {
                 }
               />
               <p className="text-xs text-zinc-400">
-                Available placeholders: {"{{firstName}}"}, {"{{lastName}}"},{" "}
+                Variables disponibles : {"{{firstName}}"}, {"{{lastName}}"},{" "}
                 {"{{email}}"}
               </p>
             </div>
@@ -377,7 +377,7 @@ export default function AutomationDetailPage() {
               }
             />
             <p className="text-xs text-zinc-400">
-              Available placeholders: {"{{firstName}}"}, {"{{lastName}}"},{" "}
+              Variables disponibles : {"{{firstName}}"}, {"{{lastName}}"},{" "}
               {"{{email}}"}
             </p>
           </div>
@@ -388,7 +388,7 @@ export default function AutomationDetailPage() {
         return (
           <Select
             label="Tag"
-            placeholder="Select a tag"
+            placeholder="Sélectionner un tag"
             options={tags.map((t) => ({ value: t.id, label: t.name }))}
             value={(step.config.tagId as string) || ""}
             onChange={(e) => {
@@ -409,7 +409,7 @@ export default function AutomationDetailPage() {
           <div className="grid grid-cols-2 gap-3">
             <Select
               label="Pipeline"
-              placeholder="Select pipeline"
+              placeholder="Sélectionner un pipeline"
               options={pipelines.map((p) => ({ value: p.id, label: p.name }))}
               value={(step.config.pipelineId as string) || ""}
               onChange={(e) => {
@@ -418,8 +418,8 @@ export default function AutomationDetailPage() {
               }}
             />
             <Select
-              label="Stage"
-              placeholder="Select stage"
+              label="Étape"
+              placeholder="Sélectionner une étape"
               options={
                 selectedPipeline
                   ? selectedPipeline.stages.map((s) => ({
@@ -441,7 +441,7 @@ export default function AutomationDetailPage() {
       case "wait":
         return (
           <Input
-            label="Duration (minutes)"
+            label="Durée (minutes)"
             type="number"
             min={1}
             placeholder="30"
@@ -487,7 +487,7 @@ export default function AutomationDetailPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-xl font-semibold text-zinc-900">
-          {isNew ? "Create Automation" : "Edit Automation"}
+          {isNew ? "Créer une automatisation" : "Modifier l'automatisation"}
         </h1>
       </div>
 
@@ -500,10 +500,10 @@ export default function AutomationDetailPage() {
       {/* Name */}
       <Card>
         <CardHeader>
-          <CardTitle>Name</CardTitle>
+          <CardTitle>Nom</CardTitle>
         </CardHeader>
         <Input
-          placeholder="e.g., Welcome New Contacts"
+          placeholder="ex. Bienvenue aux nouveaux contacts"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -512,10 +512,10 @@ export default function AutomationDetailPage() {
       {/* Trigger */}
       <Card>
         <CardHeader>
-          <CardTitle>Trigger</CardTitle>
+          <CardTitle>Déclencheur</CardTitle>
         </CardHeader>
         <Select
-          label="When should this automation run?"
+          label="Quand cette automatisation doit-elle s'exécuter ?"
           options={TRIGGER_OPTIONS}
           value={trigger}
           onChange={(e) => {
@@ -529,13 +529,13 @@ export default function AutomationDetailPage() {
       {/* Steps */}
       <Card>
         <CardHeader>
-          <CardTitle>Steps</CardTitle>
+          <CardTitle>Étapes</CardTitle>
         </CardHeader>
 
         {steps.length === 0 ? (
           <p className="mb-4 text-sm text-zinc-500">
-            No steps yet. Add a step to define what happens when the automation
-            is triggered.
+            Aucune étape. Ajoutez une étape pour définir ce qui se passe lorsque
+            l'automatisation est déclenchée.
           </p>
         ) : (
           <div className="mb-4 space-y-3">
@@ -570,7 +570,7 @@ export default function AutomationDetailPage() {
                             ? "text-zinc-300"
                             : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200"
                         )}
-                        title="Move up"
+                        title="Monter"
                       >
                         <ArrowUp className="h-3.5 w-3.5" />
                       </button>
@@ -583,14 +583,14 @@ export default function AutomationDetailPage() {
                             ? "text-zinc-300"
                             : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200"
                         )}
-                        title="Move down"
+                        title="Descendre"
                       >
                         <ArrowDown className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => removeStep(index)}
                         className="rounded p-1 text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                        title="Delete step"
+                        title="Supprimer l'étape"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -609,7 +609,7 @@ export default function AutomationDetailPage() {
 
         <Button variant="secondary" size="sm" onClick={addStep}>
           <Plus className="h-4 w-4" />
-          Add Step
+          Ajouter une étape
         </Button>
       </Card>
 
@@ -617,14 +617,14 @@ export default function AutomationDetailPage() {
       <div className="flex items-center gap-3">
         <Button onClick={handleSave} loading={saving}>
           <Save className="h-4 w-4" />
-          {isNew ? "Create Automation" : "Save Changes"}
+          {isNew ? "Créer l'automatisation" : "Enregistrer les modifications"}
         </Button>
         <Button
           variant="secondary"
           onClick={() => router.push("/automations")}
           disabled={saving}
         >
-          Cancel
+          Annuler
         </Button>
       </div>
 
@@ -632,7 +632,7 @@ export default function AutomationDetailPage() {
       {!isNew && logs.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent Logs</CardTitle>
+            <CardTitle>Journaux récents</CardTitle>
           </CardHeader>
           <div className="space-y-2">
             {logs.map((log) => (
@@ -652,10 +652,10 @@ export default function AutomationDetailPage() {
                         log.status === "success" ? "success" : "danger"
                       }
                     >
-                      Step {log.stepIndex + 1}
+                      Étape {log.stepIndex + 1}
                     </Badge>
                     <span className="text-xs text-zinc-400">
-                      {new Date(log.createdAt).toLocaleDateString("en-US", {
+                      {new Date(log.createdAt).toLocaleDateString("fr-FR", {
                         month: "short",
                         day: "numeric",
                         hour: "numeric",

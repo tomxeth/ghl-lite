@@ -95,8 +95,8 @@ function KanbanCard({ opportunity, stageColor }: KanbanCardProps) {
           </span>
           <span className="text-xs text-zinc-400">
             {daysInStage === 0
-              ? "Today"
-              : `${daysInStage}d`}
+              ? "Aujourd'hui"
+              : `${daysInStage}j`}
           </span>
         </div>
       </div>

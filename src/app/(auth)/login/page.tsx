@@ -28,13 +28,13 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Échec de la connexion");
         return;
       }
 
       router.push("/contacts");
     } catch {
-      setError("An unexpected error occurred");
+      setError("Une erreur inattendue s'est produite");
     } finally {
       setLoading(false);
     }
@@ -44,9 +44,9 @@ export default function LoginPage() {
     <div className="w-full max-w-sm">
       <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold text-zinc-900">Welcome back</h1>
+          <h1 className="text-2xl font-semibold text-zinc-900">Bon retour</h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Sign in to your GHL Lite account
+            Connectez-vous à votre compte GHL Lite
           </p>
         </div>
 
@@ -62,9 +62,9 @@ export default function LoginPage() {
           />
 
           <Input
-            label="Password"
+            label="Mot de passe"
             type="password"
-            placeholder="Enter your password"
+            placeholder="Entrez votre mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -78,17 +78,17 @@ export default function LoginPage() {
           )}
 
           <Button type="submit" loading={loading} className="mt-2 w-full">
-            Sign in
+            Connexion
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
-          Don&apos;t have an account?{" "}
+          Pas encore de compte ?{" "}
           <Link
             href="/register"
             className="font-medium text-zinc-900 hover:underline"
           >
-            Create one
+            Créer un compte
           </Link>
         </p>
       </div>

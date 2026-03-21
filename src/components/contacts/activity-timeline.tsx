@@ -92,7 +92,7 @@ function ActivityTimeline({ activities, loading }: ActivityTimelineProps) {
   if (activities.length === 0) {
     return (
       <div className="py-8 text-center text-sm text-zinc-400">
-        No activity yet.
+        Aucune activité pour le moment.
       </div>
     );
   }

@@ -72,7 +72,7 @@ function SmsComposer({ contactId, hasPhone, onSent }: SmsComposerProps) {
     <div className="border-t border-zinc-200 p-3">
       {!hasPhone ? (
         <p className="text-center text-sm text-zinc-400">
-          This contact has no phone number.
+          Ce contact n'a pas de numéro de téléphone.
         </p>
       ) : (
         <div className="flex flex-col gap-2">
@@ -81,7 +81,7 @@ function SmsComposer({ contactId, hasPhone, onSent }: SmsComposerProps) {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
+              placeholder="Tapez un message..."
               rows={1}
               className="flex-1 resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1"
               disabled={sending}

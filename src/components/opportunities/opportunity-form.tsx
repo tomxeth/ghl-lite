@@ -75,12 +75,12 @@ function OpportunityForm({
 
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
-    if (!title.trim()) newErrors.title = "Title is required";
-    if (!contactId) newErrors.contactId = "Contact is required";
-    if (!stageId) newErrors.stageId = "Stage is required";
+    if (!title.trim()) newErrors.title = "Le titre est requis";
+    if (!contactId) newErrors.contactId = "Le contact est requis";
+    if (!stageId) newErrors.stageId = "L'étape est requise";
     const numValue = parseFloat(value);
     if (isNaN(numValue) || numValue < 0)
-      newErrors.value = "Value must be a valid positive number";
+      newErrors.value = "La valeur doit être un nombre positif valide";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
@@ -100,8 +100,8 @@ function OpportunityForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Input
-        label="Deal Title"
-        placeholder="New website project"
+        label="Titre de l'affaire"
+        placeholder="Nouveau projet de site web"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         error={errors.title}
@@ -111,10 +111,11 @@ function OpportunityForm({
       {/* Contact picker with search */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-zinc-700">Contact</label>
+
         <div className="relative">
           <input
             type="text"
-            placeholder="Search contacts..."
+            placeholder="Rechercher des contacts..."
             value={
               contactDropdownOpen
                 ? contactSearch
@@ -141,7 +142,7 @@ function OpportunityForm({
               <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-48 overflow-y-auto rounded-lg border border-zinc-200 bg-white py-1 shadow-lg">
                 {filteredContacts.length === 0 ? (
                   <p className="px-3 py-2 text-sm text-zinc-400">
-                    No contacts found
+                    Aucun contact trouvé
                   </p>
                 ) : (
                   filteredContacts.slice(0, 20).map((contact) => (
@@ -169,7 +170,7 @@ function OpportunityForm({
       </div>
 
       <Select
-        label="Stage"
+        label="Étape"
         options={stages.map((s) => ({ value: s.id, label: s.name }))}
         value={stageId}
         onChange={(e) => setStageId(e.target.value)}
@@ -178,7 +179,7 @@ function OpportunityForm({
 
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="Value"
+          label="Valeur"
           type="number"
           min="0"
           step="any"
@@ -188,7 +189,7 @@ function OpportunityForm({
           error={errors.value}
         />
         <Select
-          label="Currency"
+          label="Devise"
           options={CURRENCY_OPTIONS}
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
@@ -203,10 +204,10 @@ function OpportunityForm({
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          {initialData ? "Update Deal" : "Create Deal"}
+          {initialData ? "Modifier l'affaire" : "Créer l'affaire"}
         </Button>
       </div>
     </form>

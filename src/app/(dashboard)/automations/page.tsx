@@ -27,10 +27,10 @@ interface Automation {
 }
 
 const TRIGGER_LABELS: Record<string, string> = {
-  contact_created: "Contact Created",
-  deal_stage_change: "Deal Stage Change",
-  tag_added: "Tag Added",
-  appointment_created: "Appointment Created",
+  contact_created: "Contact créé",
+  deal_stage_change: "Changement d'étape",
+  tag_added: "Tag ajouté",
+  appointment_created: "Rendez-vous créé",
 };
 
 const TRIGGER_COLORS: Record<string, string> = {
@@ -103,9 +103,9 @@ export default function AutomationsPage() {
   }
 
   function formatLastRun(logs: AutomationLog[]): string {
-    if (logs.length === 0) return "Never";
+    if (logs.length === 0) return "Jamais";
     const date = new Date(logs[0].createdAt);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString("fr-FR", {
       month: "short",
       day: "numeric",
       hour: "numeric",
@@ -116,10 +116,10 @@ export default function AutomationsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900">Automations</h1>
+        <h1 className="text-xl font-semibold text-zinc-900">Automatisations</h1>
         <Button onClick={() => router.push("/automations/new")}>
           <Plus className="h-4 w-4" />
-          Create Automation
+          Créer une automatisation
         </Button>
       </div>
 
@@ -142,10 +142,10 @@ export default function AutomationsPage() {
           <div className="py-12 text-center">
             <Zap className="mx-auto h-10 w-10 text-zinc-300" />
             <h3 className="mt-3 text-sm font-medium text-zinc-900">
-              No automations
+              Aucune automatisation
             </h3>
             <p className="mt-1 text-sm text-zinc-500">
-              Create your first automation to start streamlining your workflow.
+              Créez votre première automatisation pour optimiser votre flux de travail.
             </p>
             <div className="mt-4">
               <Button
@@ -153,7 +153,7 @@ export default function AutomationsPage() {
                 onClick={() => router.push("/automations/new")}
               >
                 <Plus className="h-4 w-4" />
-                Create Automation
+                Créer une automatisation
               </Button>
             </div>
           </div>
@@ -193,10 +193,10 @@ export default function AutomationsPage() {
                   </div>
                   <div className="mt-1 flex items-center gap-3 text-xs text-zinc-500">
                     <span>
-                      {automation.steps.length} step
+                      {automation.steps.length} étape
                       {automation.steps.length !== 1 ? "s" : ""}
                     </span>
-                    <span>Last run: {formatLastRun(automation.logs)}</span>
+                    <span>Dernière exécution : {formatLastRun(automation.logs)}</span>
                   </div>
                 </div>
 
@@ -209,7 +209,7 @@ export default function AutomationsPage() {
                       "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
                       automation.active ? "bg-green-500" : "bg-zinc-300"
                     )}
-                    title={automation.active ? "Disable" : "Enable"}
+                    title={automation.active ? "Désactiver" : "Activer"}
                   >
                     <span
                       className={cn(
@@ -250,12 +250,12 @@ export default function AutomationsPage() {
       <Modal
         open={!!deleteId}
         onClose={() => setDeleteId(null)}
-        title="Delete Automation"
+        title="Supprimer l'automatisation"
         className="max-w-sm"
       >
         <p className="text-sm text-zinc-600">
-          Are you sure you want to delete this automation? This action cannot be
-          undone and all associated logs will be removed.
+          Êtes-vous sûr de vouloir supprimer cette automatisation ? Cette action est
+          irréversible et tous les journaux associés seront supprimés.
         </p>
         <div className="mt-4 flex items-center justify-end gap-3">
           <Button
@@ -263,14 +263,14 @@ export default function AutomationsPage() {
             onClick={() => setDeleteId(null)}
             disabled={deleteLoading}
           >
-            Cancel
+            Annuler
           </Button>
           <Button
             variant="danger"
             onClick={handleDelete}
             loading={deleteLoading}
           >
-            Delete
+            Supprimer
           </Button>
         </div>
       </Modal>
