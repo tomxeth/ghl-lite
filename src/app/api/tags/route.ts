@@ -18,7 +18,11 @@ export async function GET() {
       orderBy: { name: "asc" },
     });
 
-    return Response.json({ data: tags });
+    return Response.json({ data: tags }, {
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+      },
+    });
   } catch (error) {
     console.error("List tags error:", error);
     return Response.json(

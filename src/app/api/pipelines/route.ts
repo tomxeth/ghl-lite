@@ -30,7 +30,11 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return Response.json({ data: pipelines });
+    return Response.json({ data: pipelines }, {
+      headers: {
+        "Cache-Control": "private, s-maxage=30, stale-while-revalidate=60",
+      },
+    });
   } catch (error) {
     console.error("List pipelines error:", error);
     return Response.json(
