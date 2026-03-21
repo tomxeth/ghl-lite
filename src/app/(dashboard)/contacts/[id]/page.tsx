@@ -20,13 +20,17 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { Skeleton, SkeletonAvatar, SkeletonText } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { formatPhone } from "@/lib/utils";
-import { ActivityTimeline } from "@/components/contacts/activity-timeline";
+import { cn, formatPhone } from "@/lib/utils";
 import { TagPicker } from "@/components/contacts/tag-picker";
 import { ContactForm } from "@/components/contacts/contact-form";
+import { MessageThread } from "@/components/conversations/message-thread";
+import { SmsComposer } from "@/components/conversations/sms-composer";
+import { EmailList } from "@/components/conversations/email-list";
+import { CallLog } from "@/components/conversations/call-log";
 import type { ContactFormData } from "@/components/contacts/contact-form";
-import type { Activity } from "@/components/contacts/activity-timeline";
+import type { SmsMessage } from "@/components/conversations/message-thread";
+import type { EmailMessage } from "@/components/conversations/email-list";
+import type { CallRecord } from "@/components/conversations/call-log";
 
 interface Tag {
   id: string;
@@ -55,7 +59,7 @@ interface ContactDetail {
   updatedAt: string;
 }
 
-type TabValue = "activity" | "notes" | "deals";
+type TabValue = "sms" | "email" | "calls" | "notes" | "deals";
 
 export default function ContactDetailPage({
   params,
@@ -70,11 +74,13 @@ export default function ContactDetailPage({
   const [notFound, setNotFound] = useState(false);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<TabValue>("activity");
+  const [activeTab, setActiveTab] = useState<TabValue>("sms");
 
-  // Activity
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [activitiesLoading, setActivitiesLoading] = useState(false);
+  // Conversations
+  const [smsMessages, setSmsMessages] = useState<SmsMessage[]>([]);
+  const [emails, setEmails] = useState<EmailMessage[]>([]);
+  const [calls, setCalls] = useState<CallRecord[]>([]);
+  const [convoLoading, setConvoLoading] = useState(false);
 
   // Notes
   const [notes, setNotes] = useState<Note[]>([]);
@@ -118,25 +124,38 @@ export default function ContactDetailPage({
     fetchContact();
   }, [fetchContact]);
 
-  // Fetch activities when tab changes
-  useEffect(() => {
-    if (activeTab !== "activity") return;
-
-    async function fetchActivities() {
-      setActivitiesLoading(true);
-      try {
-        const res = await fetch(`/api/contacts/${id}/activities`);
-        const json = await res.json();
-        if (res.ok) setActivities(json.data.activities);
-      } catch {
-        // silently fail
-      } finally {
-        setActivitiesLoading(false);
+  // Fetch all conversations
+  const fetchConversations = useCallback(async (type?: string) => {
+    setConvoLoading(true);
+    try {
+      const url = type
+        ? `/api/conversations/${id}?type=${type}`
+        : `/api/conversations/${id}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      if (res.ok) {
+        const items = json.data || [];
+        if (!type || type === "sms") {
+          setSmsMessages(items.filter((m: { kind: string }) => m.kind === "sms"));
+        }
+        if (!type || type === "email") {
+          setEmails(items.filter((m: { kind: string }) => m.kind === "email"));
+        }
+        if (!type || type === "calls") {
+          setCalls(items.filter((m: { kind: string }) => m.kind === "call"));
+        }
       }
+    } catch {
+      // silently fail
+    } finally {
+      setConvoLoading(false);
     }
+  }, [id]);
 
-    fetchActivities();
-  }, [id, activeTab]);
+  // Fetch conversations on mount
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
 
   // Fetch full notes when notes tab opens
   useEffect(() => {
@@ -161,7 +180,6 @@ export default function ContactDetailPage({
   // Load available tags for edit modal
   useEffect(() => {
     if (!editOpen) return;
-
     async function fetchTags() {
       try {
         const res = await fetch("/api/tags");
@@ -171,11 +189,10 @@ export default function ContactDetailPage({
         // silently fail
       }
     }
-
     fetchTags();
   }, [editOpen]);
 
-  // Fetch upcoming appointments for this contact
+  // Fetch upcoming appointments
   useEffect(() => {
     async function fetchAppointments() {
       setAppointmentsLoading(true);
@@ -199,7 +216,6 @@ export default function ContactDetailPage({
         setAppointmentsLoading(false);
       }
     }
-
     fetchAppointments();
   }, [id]);
 
@@ -277,6 +293,10 @@ export default function ContactDetailPage({
     );
   }
 
+  function handleSmsSent(message: { id: string; direction: string; body: string; status: string; createdAt: string; kind: string }) {
+    setSmsMessages((prev) => [...prev, message as unknown as SmsMessage]);
+  }
+
   // 404 state
   if (notFound) {
     return (
@@ -316,15 +336,12 @@ export default function ContactDetailPage({
               </div>
             </Card>
             <Card>
-              <SkeletonText lines={6} />
+              <SkeletonText lines={8} />
             </Card>
           </div>
           <div className="lg:col-span-2 space-y-4">
             <Card>
               <SkeletonText lines={5} />
-            </Card>
-            <Card>
-              <SkeletonText lines={3} />
             </Card>
           </div>
         </div>
@@ -332,10 +349,27 @@ export default function ContactDetailPage({
     );
   }
 
-  const tabs: { value: TabValue; label: string }[] = [
-    { value: "activity", label: "Activity" },
-    { value: "notes", label: "Notes" },
-    { value: "deals", label: "Deals" },
+  const tabs: { value: TabValue; label: string; icon: React.ReactNode; count?: number }[] = [
+    {
+      value: "sms",
+      label: "SMS",
+      icon: <MessageSquare className="h-3.5 w-3.5" />,
+      count: smsMessages.length,
+    },
+    {
+      value: "email",
+      label: "Email",
+      icon: <Mail className="h-3.5 w-3.5" />,
+      count: emails.length,
+    },
+    {
+      value: "calls",
+      label: "Calls",
+      icon: <Phone className="h-3.5 w-3.5" />,
+      count: calls.length,
+    },
+    { value: "notes", label: "Notes", icon: null },
+    { value: "deals", label: "Deals", icon: null },
   ];
 
   return (
@@ -353,7 +387,7 @@ export default function ContactDetailPage({
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        {/* Left column - 60% */}
+        {/* Left column — conversations */}
         <div className="lg:col-span-3 space-y-4">
           {/* Contact header */}
           <Card>
@@ -383,38 +417,88 @@ export default function ContactDetailPage({
                   </p>
                 )}
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setEditOpen(true)}
+              >
+                Edit
+              </Button>
             </div>
           </Card>
 
           {/* Tabs */}
-          <div className="flex gap-1 border-b border-zinc-200">
+          <div className="flex gap-1 border-b border-zinc-200 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
+                  "flex items-center gap-1.5 whitespace-nowrap px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
                   "border-b-2 -mb-px",
                   activeTab === tab.value
                     ? "border-zinc-900 text-zinc-900"
                     : "border-transparent text-zinc-500 hover:text-zinc-700"
                 )}
               >
+                {tab.icon}
                 {tab.label}
+                {tab.count != null && tab.count > 0 && (
+                  <span className="ml-1 rounded-full bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">
+                    {tab.count}
+                  </span>
+                )}
               </button>
             ))}
           </div>
 
           {/* Tab content */}
-          <Card>
-            {activeTab === "activity" && (
-              <ActivityTimeline
-                activities={activities}
-                loading={activitiesLoading}
-              />
-            )}
+          {activeTab === "sms" && (
+            <Card noPadding>
+              <div className="flex flex-col" style={{ minHeight: 400 }}>
+                <MessageThread
+                  messages={smsMessages}
+                  loading={convoLoading}
+                />
+                <SmsComposer
+                  contactId={contact.id}
+                  hasPhone={!!contact.phone}
+                  onSent={handleSmsSent}
+                />
+              </div>
+            </Card>
+          )}
 
-            {activeTab === "notes" && (
+          {activeTab === "email" && (
+            <Card noPadding>
+              <div style={{ minHeight: 400 }}>
+                <EmailList
+                  emails={emails}
+                  loading={convoLoading}
+                  contactId={contact.id}
+                  contactEmail={contact.email}
+                  onRefresh={() => fetchConversations()}
+                />
+              </div>
+            </Card>
+          )}
+
+          {activeTab === "calls" && (
+            <Card noPadding>
+              <div style={{ minHeight: 400 }}>
+                <CallLog
+                  calls={calls}
+                  loading={convoLoading}
+                  contactId={contact.id}
+                  hasPhone={!!contact.phone}
+                  onRefresh={() => fetchConversations()}
+                />
+              </div>
+            </Card>
+          )}
+
+          {activeTab === "notes" && (
+            <Card>
               <div className="flex flex-col gap-4">
                 {/* Add note */}
                 <div className="flex flex-col gap-2">
@@ -472,29 +556,24 @@ export default function ContactDetailPage({
                   </div>
                 )}
               </div>
-            )}
+            </Card>
+          )}
 
-            {activeTab === "deals" && (
+          {activeTab === "deals" && (
+            <Card>
               <div className="py-8 text-center text-sm text-zinc-400">
                 No deals yet.
               </div>
-            )}
-          </Card>
+            </Card>
+          )}
         </div>
 
-        {/* Right column - 40% */}
+        {/* Right column */}
         <div className="lg:col-span-2 space-y-4">
           {/* Contact info card */}
           <Card>
             <CardHeader>
               <CardTitle>Contact Info</CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setEditOpen(true)}
-              >
-                Edit
-              </Button>
             </CardHeader>
 
             <dl className="space-y-3 text-sm">
@@ -563,23 +642,38 @@ export default function ContactDetailPage({
             />
           </Card>
 
-          {/* Quick Actions */}
+          {/* Quick Actions — now functional */}
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <div className="flex flex-col gap-2">
-              <Button variant="secondary" size="sm" disabled>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setActiveTab("sms")}
+                disabled={!contact.phone}
+              >
                 <MessageSquare className="h-4 w-4" />
-                Send SMS
+                {contact.phone ? "Send SMS" : "No phone number"}
               </Button>
-              <Button variant="secondary" size="sm" disabled>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setActiveTab("email")}
+                disabled={!contact.email}
+              >
                 <Mail className="h-4 w-4" />
-                Send Email
+                {contact.email ? "Send Email" : "No email address"}
               </Button>
-              <Button variant="secondary" size="sm" disabled>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setActiveTab("calls")}
+                disabled={!contact.phone}
+              >
                 <Phone className="h-4 w-4" />
-                Call
+                {contact.phone ? "Call" : "No phone number"}
               </Button>
             </div>
           </Card>
