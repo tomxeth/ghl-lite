@@ -81,10 +81,10 @@ export default function ConversationsPage() {
   }, [debouncedSearch]);
 
   // Fetch conversation when contact or tab changes
-  const fetchConversation = useCallback(async () => {
+  const fetchConversation = useCallback(async (options?: { silent?: boolean }) => {
     if (!selectedContact) return;
 
-    setLoadingConversation(true);
+    if (!options?.silent) setLoadingConversation(true);
     try {
       const res = await fetch(
         `/api/conversations/${selectedContact.id}?type=${activeTab === "calls" ? "calls" : activeTab}`
@@ -120,13 +120,22 @@ export default function ConversationsPage() {
     } catch {
       // silently fail
     } finally {
-      setLoadingConversation(false);
+      if (!options?.silent) setLoadingConversation(false);
     }
   }, [selectedContact, activeTab]);
 
   useEffect(() => {
     fetchConversation();
   }, [fetchConversation]);
+
+  // Poll for new messages every 5 seconds
+  useEffect(() => {
+    if (!selectedContact) return;
+    const interval = setInterval(() => {
+      fetchConversation({ silent: true });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [selectedContact, fetchConversation]);
 
   function handleSmsSent(message: SmsMessage & { kind: string }) {
     setSmsMessages((prev) => [...prev, message as unknown as SmsMessage]);

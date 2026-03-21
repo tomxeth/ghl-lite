@@ -125,30 +125,21 @@ export default function ContactDetailPage({
   }, [fetchContact]);
 
   // Fetch all conversations
-  const fetchConversations = useCallback(async (type?: string) => {
-    setConvoLoading(true);
+  const fetchConversations = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) setConvoLoading(true);
     try {
-      const url = type
-        ? `/api/conversations/${id}?type=${type}`
-        : `/api/conversations/${id}`;
-      const res = await fetch(url);
+      const res = await fetch(`/api/conversations/${id}`);
       const json = await res.json();
       if (res.ok) {
         const items = json.data || [];
-        if (!type || type === "sms") {
-          setSmsMessages(items.filter((m: { kind: string }) => m.kind === "sms"));
-        }
-        if (!type || type === "email") {
-          setEmails(items.filter((m: { kind: string }) => m.kind === "email"));
-        }
-        if (!type || type === "calls") {
-          setCalls(items.filter((m: { kind: string }) => m.kind === "call"));
-        }
+        setSmsMessages(items.filter((m: { kind: string }) => m.kind === "sms"));
+        setEmails(items.filter((m: { kind: string }) => m.kind === "email"));
+        setCalls(items.filter((m: { kind: string }) => m.kind === "call"));
       }
     } catch {
       // silently fail
     } finally {
-      setConvoLoading(false);
+      if (!options?.silent) setConvoLoading(false);
     }
   }, [id]);
 
@@ -156,6 +147,15 @@ export default function ContactDetailPage({
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
+
+  // Poll for new messages every 5 seconds when on a conversation tab
+  useEffect(() => {
+    if (!["sms", "email", "calls"].includes(activeTab)) return;
+    const interval = setInterval(() => {
+      fetchConversations({ silent: true });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeTab, fetchConversations]);
 
   // Fetch full notes when notes tab opens
   useEffect(() => {
