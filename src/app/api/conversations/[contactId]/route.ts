@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
 
 export async function GET(
   request: NextRequest,
@@ -21,8 +21,9 @@ export async function GET(
     if (!contact) {
       return Response.json({ error: "Contact not found" }, { status: 404 });
     }
-    if (contact.userId !== user.id) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+    const userIds = await getTeamUserIds(user.id, user.teamId);
+    if (!userIds.includes(contact.userId)) {
+      return Response.json({ error: "Interdit" }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;

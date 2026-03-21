@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
 import { fireAutomation } from "@/lib/automations";
 
 const updateOpportunitySchema = z.object({
@@ -11,15 +11,16 @@ const updateOpportunitySchema = z.object({
   status: z.enum(["open", "won", "lost"]).optional(),
 });
 
-async function getAuthedOpportunity(userId: string, opportunityId: string) {
+async function getAuthedOpportunity(userId: string, teamId: string | null, opportunityId: string) {
   const opportunity = await db.opportunity.findUnique({
     where: { id: opportunityId },
   });
 
   if (!opportunity)
     return { error: "Opportunity not found", status: 404 as const };
-  if (opportunity.userId !== userId)
-    return { error: "Forbidden", status: 403 as const };
+  const userIds = await getTeamUserIds(userId, teamId);
+  if (!userIds.includes(opportunity.userId))
+    return { error: "Interdit", status: 403 as const };
 
   return { opportunity };
 }
@@ -35,7 +36,7 @@ export async function GET(
     }
 
     const { id } = await params;
-    const result = await getAuthedOpportunity(user.id, id);
+    const result = await getAuthedOpportunity(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });
@@ -105,7 +106,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const result = await getAuthedOpportunity(user.id, id);
+    const result = await getAuthedOpportunity(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });
@@ -189,7 +190,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const result = await getAuthedOpportunity(user.id, id);
+    const result = await getAuthedOpportunity(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });

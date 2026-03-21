@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
 
 const updateContactSchema = z.object({
   firstName: z.string().min(1, "First name is required").optional(),
@@ -11,14 +11,15 @@ const updateContactSchema = z.object({
   source: z.string().optional().nullable(),
 });
 
-async function getAuthedContact(userId: string, contactId: string) {
+async function getAuthedContact(userId: string, teamId: string | null, contactId: string) {
   const contact = await db.contact.findUnique({
     where: { id: contactId },
   });
 
   if (!contact) return { error: "Contact not found", status: 404 as const };
-  if (contact.userId !== userId)
-    return { error: "Forbidden", status: 403 as const };
+  const userIds = await getTeamUserIds(userId, teamId);
+  if (!userIds.includes(contact.userId))
+    return { error: "Interdit", status: 403 as const };
 
   return { contact };
 }
@@ -34,7 +35,7 @@ export async function GET(
     }
 
     const { id } = await params;
-    const result = await getAuthedContact(user.id, id);
+    const result = await getAuthedContact(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });
@@ -82,7 +83,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const result = await getAuthedContact(user.id, id);
+    const result = await getAuthedContact(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });
@@ -130,7 +131,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const result = await getAuthedContact(user.id, id);
+    const result = await getAuthedContact(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });

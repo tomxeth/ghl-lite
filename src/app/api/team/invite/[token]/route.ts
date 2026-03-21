@@ -88,6 +88,13 @@ export async function POST(
       );
     }
 
+    if (user.email !== invite.email) {
+      return Response.json(
+        { error: "Cette invitation est destinée à une autre adresse email" },
+        { status: 403 }
+      );
+    }
+
     if (user.teamId) {
       return Response.json(
         { error: "You are already in a team. Leave your current team first." },

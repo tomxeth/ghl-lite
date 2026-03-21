@@ -264,6 +264,16 @@ model TeamInvite {
   @@index([email])
 }
 
+// ─── RATE LIMITING ───────────────────────────────────────
+
+model RateLimitEntry {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
 // ─── AUTOMATIONS ─────────────────────────────────────────
 
 model Automation {

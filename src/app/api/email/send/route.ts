@@ -49,8 +49,16 @@ export async function POST(request: Request) {
     const fromName = user.name;
     const fromEmail = `${user.name.toLowerCase().replace(/\s+/g, "")}@mail.laformuleretour.com`;
 
-    // Convert plain text body to simple HTML
-    const html = body.replace(/\n/g, "<br>");
+    // Convert plain text body to simple HTML (escape first to prevent injection)
+    function escapeHtml(str: string): string {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    const html = escapeHtml(body).replace(/\n/g, "<br>");
     const messageId = await sendEmail(contact.email, subject, html, fromName, fromEmail);
 
     const [message] = await Promise.all([
@@ -78,9 +86,8 @@ export async function POST(request: Request) {
     return Response.json({ data: message }, { status: 201 });
   } catch (error) {
     console.error("Send email error:", error);
-    const message = error instanceof Error ? error.message : String(error);
     return Response.json(
-      { error: "An unexpected error occurred", details: message },
+      { error: "Une erreur inattendue s'est produite" },
       { status: 500 }
     );
   }

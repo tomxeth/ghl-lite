@@ -1,19 +1,20 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { getSession, getTeamUserIds } from "@/lib/auth";
 
 const updatePipelineSchema = z.object({
   name: z.string().min(1, "Pipeline name is required"),
 });
 
-async function getAuthedPipeline(userId: string, pipelineId: string) {
+async function getAuthedPipeline(userId: string, teamId: string | null, pipelineId: string) {
   const pipeline = await db.pipeline.findUnique({
     where: { id: pipelineId },
   });
 
   if (!pipeline) return { error: "Pipeline not found", status: 404 as const };
-  if (pipeline.userId !== userId)
-    return { error: "Forbidden", status: 403 as const };
+  const userIds = await getTeamUserIds(userId, teamId);
+  if (!userIds.includes(pipeline.userId))
+    return { error: "Interdit", status: 403 as const };
 
   return { pipeline };
 }
@@ -29,7 +30,7 @@ export async function GET(
     }
 
     const { id } = await params;
-    const result = await getAuthedPipeline(user.id, id);
+    const result = await getAuthedPipeline(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });
@@ -77,7 +78,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const result = await getAuthedPipeline(user.id, id);
+    const result = await getAuthedPipeline(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });
@@ -122,7 +123,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const result = await getAuthedPipeline(user.id, id);
+    const result = await getAuthedPipeline(user.id, user.teamId, id);
 
     if ("error" in result) {
       return Response.json({ error: result.error }, { status: result.status });

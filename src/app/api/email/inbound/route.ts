@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { verifyMailgunWebhook } from "@/lib/mailgun";
+import { getTeamUserIds } from "@/lib/auth";
 
 function extractEmail(raw: string): string {
   // Handle "Name <email@example.com>" format
@@ -45,23 +46,19 @@ export async function POST(request: Request) {
     const localPart = recipientEmail.split("@")[0] || "";
 
     // Find user by matching name to the local part of the recipient email
-    let user = await db.user.findFirst({
+    const user = await db.user.findFirst({
       where: { name: { contains: localPart, mode: "insensitive" } },
     });
 
-    // Fallback: use the first user in the DB
     if (!user) {
-      user = await db.user.findFirst({ orderBy: { createdAt: "asc" } });
+      console.warn(`Inbound email: no user found for recipient ${recipientEmail}`);
+      return Response.json({ success: true, skipped: true }, { status: 200 });
     }
 
-    if (!user) {
-      console.error("Inbound email webhook: no user found in database");
-      return Response.json({ success: true }, { status: 200 });
-    }
-
-    // Find or create contact by sender email
+    // Find or create contact by sender email (scoped to user's team)
+    const userIds = await getTeamUserIds(user.id, user.teamId);
     let contact = await db.contact.findFirst({
-      where: { email: senderEmail },
+      where: { email: senderEmail, userId: { in: userIds } },
     });
 
     if (!contact) {

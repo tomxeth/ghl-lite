@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { hashPassword, createSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const registerSchema = z.object({
   email: z.email("Adresse email invalide"),
@@ -10,6 +11,16 @@ const registerSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: max 5 registrations per IP per hour
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const allowed = await checkRateLimit(`register:${ip}`, 60 * 60 * 1000, 5);
+    if (!allowed) {
+      return Response.json(
+        { error: "Trop de tentatives d'inscription. Veuillez réessayer plus tard." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const parsed = registerSchema.safeParse(body);
 
@@ -88,9 +99,8 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Registration error:", error);
-    const message = error instanceof Error ? error.message : String(error);
     return Response.json(
-      { error: "Une erreur inattendue s'est produite", details: message },
+      { error: "Une erreur inattendue s'est produite" },
       { status: 500 }
     );
   }
