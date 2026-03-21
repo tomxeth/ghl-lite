@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { db } from "./db";
-import type { User } from "@/generated/prisma/client";
+import type { User } from "@prisma/client";
 
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 12);
