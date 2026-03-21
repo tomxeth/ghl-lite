@@ -979,7 +979,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <CardTitle>Mailgun</CardTitle>
-                  <p className="text-xs text-zinc-500">Envoi d'emails</p>
+                  <p className="text-xs text-zinc-500">Envoi et réception d'emails</p>
                 </div>
               </div>
               <MailgunStatus />
@@ -988,6 +988,24 @@ export default function SettingsPage() {
               Connectez Mailgun pour envoyer des emails transactionnels avec suivi
               d'ouverture et de clic.
             </p>
+
+            {/* Inbound email setup */}
+            <div className="mt-4 border-t border-zinc-100 pt-4">
+              <h4 className="text-sm font-semibold text-zinc-900 mb-2">
+                Réception d'emails
+              </h4>
+              <p className="text-sm text-zinc-500 mb-3">
+                Configurez la réception des emails entrants pour que les réponses de vos
+                contacts apparaissent dans leurs conversations.
+              </p>
+              <InboundEmailSetup />
+              <p className="mt-3 text-xs text-zinc-400">
+                Les enregistrements MX de <span className="font-mono">mail.laformuleretour.com</span> doivent
+                pointer vers Mailgun (<span className="font-mono">mxa.eu.mailgun.org</span> et{" "}
+                <span className="font-mono">mxb.eu.mailgun.org</span>, priorité 10) pour que la
+                réception fonctionne.
+              </p>
+            </div>
           </Card>
         </div>
       )}
@@ -1120,5 +1138,52 @@ function MailgunStatus() {
     <Badge variant={status === "connected" ? "success" : "default"}>
       {status === "connected" ? "Connecté" : "Non configuré"}
     </Badge>
+  );
+}
+
+function InboundEmailSetup() {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  async function handleSetup() {
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/email/setup-inbound", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setResult({ success: true, message: "Route de réception configurée avec succès." });
+      } else {
+        setResult({
+          success: false,
+          message: data.details || data.error || "Erreur lors de la configuration.",
+        });
+      }
+    } catch {
+      setResult({ success: false, message: "Une erreur inattendue s'est produite." });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div>
+      <Button size="sm" onClick={handleSetup} loading={loading}>
+        <MailIcon className="h-4 w-4" />
+        Configurer la réception d'emails
+      </Button>
+      {result && (
+        <p
+          className={cn(
+            "mt-2 rounded-lg px-3 py-2 text-sm",
+            result.success
+              ? "bg-green-50 text-green-700"
+              : "bg-red-50 text-red-600"
+          )}
+        >
+          {result.message}
+        </p>
+      )}
+    </div>
   );
 }

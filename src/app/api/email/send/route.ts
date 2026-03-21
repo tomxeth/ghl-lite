@@ -45,9 +45,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // Build FROM address dynamically from user name
+    const fromName = user.name;
+    const fromEmail = `${user.name.toLowerCase().replace(/\s+/g, "")}@mail.laformuleretour.com`;
+
     // Convert plain text body to simple HTML
     const html = body.replace(/\n/g, "<br>");
-    const messageId = await sendEmail(contact.email, subject, html);
+    const messageId = await sendEmail(contact.email, subject, html, fromName, fromEmail);
 
     const [message] = await Promise.all([
       db.emailMessage.create({
