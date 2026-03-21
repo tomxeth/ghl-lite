@@ -8,7 +8,8 @@ function getClient() {
     throw new Error("Mailgun API key not configured. Set MAILGUN_API_KEY.");
   }
   const mailgun = new Mailgun(FormData);
-  return mailgun.client({ username: "api", key });
+  const url = process.env.MAILGUN_URL || "https://api.eu.mailgun.net";
+  return mailgun.client({ username: "api", key, url });
 }
 
 export async function sendEmail(to: string, subject: string, html: string) {
