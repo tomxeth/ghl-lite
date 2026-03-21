@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── AUTH ────────────────────────────────────────────────
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  hashedPassword String
+  name           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  contacts      Contact[]
+  pipelines     Pipeline[]
+  opportunities Opportunity[]
+  activities    Activity[]
+  emailMessages EmailMessage[]
+  smsMessages   SmsMessage[]
+  calls         Call[]
+  sessions      Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
+// ─── CONTACTS ────────────────────────────────────────────
+
+model Contact {
+  id        String   @id @default(cuid())
+  userId    String
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  company   String?
+  source    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags          TagOnContact[]
+  notes         Note[]
+  opportunities Opportunity[]
+  activities    Activity[]
+  emailMessages EmailMessage[]
+  smsMessages   SmsMessage[]
+  calls         Call[]
+
+  @@index([userId])
+  @@index([email])
+  @@index([phone])
+}
+
+model Tag {
+  id       String         @id @default(cuid())
+  name     String         @unique
+  color    String         @default("#6B7280")
+  contacts TagOnContact[]
+}
+
+model TagOnContact {
+  contactId String
+  tagId     String
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contactId, tagId])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  contactId String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
+
+// ─── PIPELINE & OPPORTUNITIES ────────────────────────────
+
+model Pipeline {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stages Stage[]
+
+  @@index([userId])
+}
+
+model Stage {
+  id         String @id @default(cuid())
+  pipelineId String
+  name       String
+  position   Int
+  color      String @default("#3B82F6")
+
+  pipeline      Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  opportunities Opportunity[]
+
+  @@index([pipelineId])
+}
+
+model Opportunity {
+  id        String    @id @default(cuid())
+  userId    String
+  contactId String
+  stageId   String
+  title     String
+  value     Float     @default(0)
+  currency  String    @default("USD")
+  status    String    @default("open")
+  closedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact    Contact    @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  stage      Stage      @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  activities Activity[]
+
+  @@index([userId])
+  @@index([stageId])
+  @@index([contactId])
+}
+
+// ─── ACTIVITY / TIMELINE ─────────────────────────────────
+
+model Activity {
+  id            String   @id @default(cuid())
+  userId        String
+  contactId     String
+  opportunityId String?
+  type          String
+  description   String
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact     Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+
+  @@index([contactId])
+  @@index([opportunityId])
+  @@index([createdAt])
+}
+
+// ─── COMMUNICATIONS ──────────────────────────────────────
+
+model EmailMessage {
+  id        String    @id @default(cuid())
+  userId    String
+  contactId String
+  direction String
+  subject   String
+  body      String
+  status    String    @default("sent")
+  messageId String?
+  openedAt  DateTime?
+  clickedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([messageId])
+}
+
+model SmsMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  contactId String
+  direction String
+  body      String
+  status    String   @default("sent")
+  twilioSid String?
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([twilioSid])
+}
+
+model Call {
+  id           String   @id @default(cuid())
+  userId       String
+  contactId    String
+  direction    String
+  status       String
+  duration     Int?
+  recordingUrl String?
+  twilioSid    String?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([twilioSid])
+}
