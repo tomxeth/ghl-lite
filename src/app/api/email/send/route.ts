@@ -74,8 +74,9 @@ export async function POST(request: Request) {
     return Response.json({ data: message }, { status: 201 });
   } catch (error) {
     console.error("Send email error:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return Response.json(
-      { error: "An unexpected error occurred" },
+      { error: "An unexpected error occurred", details: message },
       { status: 500 }
     );
   }
